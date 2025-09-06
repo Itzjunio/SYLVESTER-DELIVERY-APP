@@ -1,35 +1,12 @@
 import { authSchema, serializeResponse, ApiResponse, AuthSchemaType, IUserResponse} from './AuthSchemas.js';
-import { AuthenticatedRequest, IUser } from '../../types/index.js';
+import { IUser } from '../../types/index.js';
 import { Request, Response } from 'express';
-import { User } from './UserModel.js';
-import jwt, {Secret} from 'jsonwebtoken';
+import { User } from '../User/UserModel.js';
 import bcrypt from 'bcryptjs';
-import dotenv from 'dotenv';
+import { generateTokens, decodeToken, verifyJwtToken, signVerificationToken } from '../utils/jwt.js';
+import { sendMail } from '../utils/mailer.js';
+import { generateRandomToken } from '../utils/token.js';
 
-
-dotenv.config();
-
-
-if (!process.env.ACCESS_TOKEN_SECRET || !process.env.REFRESH_TOKEN_SECRET) {
-    throw new Error('ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET must be defined in environment variables');
-}
-const ACCESS_TOKEN_SECRET: Secret = process.env.ACCESS_TOKEN_SECRET as Secret;
-const REFRESH_TOKEN_SECRET: Secret = process.env.REFRESH_TOKEN_SECRET as Secret;
-
-const generateTokens = (user: IUser): { accessToken: string; refreshToken: string } => {
-    const accessToken = jwt.sign(
-        { _id: user._id, role: user.role },
-        ACCESS_TOKEN_SECRET,
-        { expiresIn: '15m' }
-    );
-
-    const refreshToken = jwt.sign(
-        { _id: user._id, role: user.role },
-        REFRESH_TOKEN_SECRET,
-        { expiresIn: '7d' }
-    );
-    return { accessToken, refreshToken };
-};
 
 export const register = async (
     req: Request<{}, {}, AuthSchemaType>,
@@ -58,6 +35,10 @@ export const register = async (
         const newUser = new User({ email, password, role });
         await newUser.save();
 
+        const token = signVerificationToken(email);
+        const link = `${process.env.APP_URL}/auth/verify?token=${token}`;
+        await sendMail(email, "Verify Your Account", `<a href="${link}">Verify</a>`)
+
         const { accessToken, refreshToken } = generateTokens(newUser);
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -77,7 +58,7 @@ export const register = async (
         return res.status(201).json(serializeResponse('success', {
             user: userResponse,
             accessToken,
-        }, 'User registered successfully'));
+        }, 'User registered successfully, Check email to verify'));
 
     } catch (error: unknown) {
         console.error(error);
@@ -94,7 +75,14 @@ export const login = async (
     res: Response<ApiResponse<{ user: IUserResponse; accessToken: string } | null>>
 ): Promise<Response> => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role} = req.body;
+        if (!email || !role) return res.status(400).json({
+            status: 'error',
+            message: 'Missing fields',
+            data: null
+        });
+
+        
         const user = await User.findOne({ email }).select('+password');
         if (!user) {
             return res.status(401).json({
@@ -103,14 +91,28 @@ export const login = async (
                 data: null
             });
         }
+        if (user.lockUntil && user.lockUntil > new Date()) {
+            return res.status(429).json({status: 'error', message: "Account locked. Try again later.", data: null });
+          }
         const isMatch = await bcrypt.compare(password, user.password as string);
         if (!isMatch) {
+            user.failedAttempts += 1;
+
+            if (user.failedAttempts >= 5) {
+                user.lockUntil = new Date(Date.now() + 15 * 60 * 1000); 
+                user.failedAttempts = 0;
+            }
+            await user.save();
             return res.status(401).json({
                 status: 'error',
                 message: 'Invalid credentials',
                 data: null
             });
         }
+
+        user.failedAttempts = 0;
+        user.lockUntil = undefined;
+        await user.save();
 
         const { accessToken, refreshToken } = generateTokens(user);
         res.cookie('refreshToken', refreshToken, {
@@ -144,7 +146,7 @@ export const login = async (
 };
 
 export const refreshToken = async (
-    req: AuthenticatedRequest,
+    req: Request,
     res: Response<ApiResponse<{ accessToken: string } | null>>
 ): Promise<Response> => {
     try {
@@ -166,7 +168,7 @@ export const refreshToken = async (
                 data: null
             });
         }
-        const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET) as { _id: string; role: string };
+        const decoded = decodeToken(token);
 
         const user = await User.findById(decoded._id);
         if (!user) {
@@ -177,14 +179,10 @@ export const refreshToken = async (
             });
         }
 
-        const newAccessToken = jwt.sign(
-            { _id: user._id, role: user.role },
-            ACCESS_TOKEN_SECRET,
-            { expiresIn: '15m' }
-        );
+        const { accessToken } = generateTokens(user)
 
         return res.status(200).json(serializeResponse('success', {
-            accessToken: newAccessToken,
+            accessToken: accessToken,
         }, 'New access token generated'));
 
     } catch (error: unknown) {
@@ -214,18 +212,73 @@ export const refreshToken = async (
     }
 };
 
-export const logout = (
+export const logout = async(
     _req: Request,
     res: Response<ApiResponse<null>>
-): Response => {
+): Promise<Response> => {
     res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict'
     });
-    return res.status(200).json({
+    return res.status(204).json({
         status: 'success',
         message: 'Logout successful',
         data: null
     });
+};
+export const verifyUserToken = async(req: Request, res: Response)=>{
+
+    const token = req.query.token as string;
+    const payload = verifyJwtToken(token);
+    if(!payload) return res.status(400). json({status: "error", message: "Invalid or expired token"});
+
+    const user = await User.findOne({ email: payload.email});
+    if(!user) return res.status(404).json({message: "User not found"});
+    user.validated = true;
+    await user.save();
+
+    return res.status(201).json({message:"Email verified SUccessfully"})
+}
+
+export const forgotPassword = async(req: Request<{}, {}, IUser>, res: Response) =>{
+
+    const {email} = req.body;
+    const user = await User.findOne({email});
+
+    if(!user) {
+        return res.json({ message: " If user exist, a link was sent"});
+    }
+    const {raw, hashed} = generateRandomToken();
+    user.resetCode = hashed;
+    user.resetExpiry = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    const link = `${process.env.APP_URL}/auth/reset-password?token=${raw}&email=${email}`;
+    await sendMail(email, "Reset your password", `<a href="${link}">Reset Password</a>`);
+  
+    return res.json({ message: "If email exists, a reset link was sent." });
+}
+
+export const resetPassword = async(req: Request, res: Response)=>{
+
+    const { email, token, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user || !user.resetCode || !user.resetExpiry) {
+      return res.status(400).json({ message: "Invalid or expired request" });
+    }
+  
+    const hashedInput = require("crypto").createHash("sha256").update(token).digest("hex");
+  
+    if (hashedInput !== user.resetCode || user.resetExpiry < new Date()) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+  
+    user.password = await bcrypt.hash(newPassword, 12);
+    user.resetCode = undefined;
+    user.resetExpiry = undefined;
+
+    await user.save();
+  
+    return res.json({ message: "Password reset successful" });
 };

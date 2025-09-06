@@ -2,6 +2,17 @@
 import express, { Application } from 'express';
 import authRouter from './shared/auth/AuthRoutes.js';
 
+declare global {
+    namespace Express {
+        interface User {
+            _id: string;
+            role: string;
+        }
+        interface Request {
+            user?: User;
+        }
+    }
+}
 
 // import { customerRoutes } from './api/customers/routes';
 // import { vendorRoutes } from './api/vendors/routes';

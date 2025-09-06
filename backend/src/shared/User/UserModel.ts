@@ -30,22 +30,24 @@ const UserSchema = new Schema<IUser>(
             type: String,
             trim: true,
         },
-        verificationCode: {
+        validated: {
+            type: Boolean,
+            default: false
+        },
+        resetCode: {
             type: String,
             select: false
         },
-        verificationCodeValidation: {
-            type: Number,
+        
+        resetExpiry: {
+            type: Date,
             select: false
         },
-        forgotPassward: {
-            type: String,
-            select: false
-        },
-        forgotPasswardValidation: {
+        failedAttempts: {
             type: Number,
-            select: false
-        }
+            default: 0 },
+        lockUntil: { type: Date },
+
     },
     {
         timestamps: true, 
