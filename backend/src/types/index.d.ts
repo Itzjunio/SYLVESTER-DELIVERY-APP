@@ -1,18 +1,29 @@
-import { Request } from 'express';
-import { Document, Types } from 'mongoose';
+
+import { Document, Schema, Types } from 'mongoose';
+import { Request, Response } from 'express';
 
 
-type UserRole = 'customer' | 'vendor' | 'rider' | 'admin';
+declare global {
+    namespace Express {
+        interface Request {
+            user?: IUser | IAuthenticatedUser;
+        }
+    }
+}
 
-// export interface AuthenticatedRequest extends Request {
-//     user?: {
-//         _id: Types.ObjectId;
-//         role: UserRole
-//     };
-// }
+export type UserRole = 'customer' | 'vendor' | 'rider';
+
+interface IRefreshTokenPayload {
+    _id: string;
+    role: string;
+}
+interface IAuthenticatedUser {
+    _id: Types.ObjectId;
+    role: UserRole;
+}
 
 
-export interface IUser extends Document {
+interface IUser extends Document {
     _id: Types.ObjectId;
     email: string;
     password?: string;
@@ -27,7 +38,8 @@ export interface IUser extends Document {
     updatedAt: Date;
 }
 
-export interface Iaudit extends Document{
+
+interface Iaudit extends Document{
     userId: Types.ObjectId;
     action: string;
     ip: string;
@@ -36,3 +48,42 @@ export interface Iaudit extends Document{
 }
 
 
+interface ILocation {
+    type: 'Point';
+    coordinates: number[];
+}
+interface IMenuItem {
+    name: string;
+    description?: string;
+    price: number;
+    image?: string;
+    category?: string;
+    isAvailable?: boolean;
+}
+
+interface IOrderItem {
+    name: string;
+    quantity: number;
+    price: number;
+}
+
+interface IRestaurant extends Document {
+    name: string;
+    owner: Types.ObjectId;
+    location: ILocation;
+    menu: IMenuItem[];
+    cuisine: string[];
+    address: string;
+}
+
+interface IOrder extends Document {
+    customerId: Types.ObjectId;
+    restaurantId: Types.ObjectId;
+    riderId?: Types.ObjectId;
+    items: IOrderItem[];
+    totalAmount: number;
+    orderStatus: 'pending' | 'accepted' | 'in-transit' | 'delivered' | 'cancelled';
+    paymentMethod: string;
+    deliveryAddress: string;
+}
+export  {IOrder, IRestaurant, IOrderItem, IMenuItem, ILocation, Iaudit, IUser, IAuthenticatedUser, IRefreshTokenPayload}

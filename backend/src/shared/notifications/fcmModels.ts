@@ -1,16 +1,10 @@
-import mongoose, { Schema, Document, Types } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
+import { IDeviceToken } from "./fcmSchemas";
 
-type platformType = "web" | "ios" | "andriod";
 
-export interface IDeviceToken extends Document {
-  userId: Types.ObjectId;
-  role: string;
-  token: string;
-  platform: platformType;
-  createdAt: Date;
-}
+export interface IDeviceTokenDoc extends IDeviceToken, Document {}
 
-const deviceTokenSchema = new Schema<IDeviceToken>({
+const deviceTokenSchema = new Schema<IDeviceTokenDoc>({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   role: { type: String, required: true },
   token: { type: String, required: true, unique: true },
@@ -18,4 +12,4 @@ const deviceTokenSchema = new Schema<IDeviceToken>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const DeviceToken = mongoose.model<IDeviceToken>("DeviceToken", deviceTokenSchema);
+export const DeviceToken = mongoose.model<IDeviceTokenDoc>("DeviceToken", deviceTokenSchema);

@@ -1,7 +1,7 @@
-import { DeviceToken } from "./fcmModels.js";
+import { DeviceToken } from "./fcmModels";
 import { Types } from "mongoose";
-import { INotificationPayload, FcmMessage, FcmMessageTopic } from "./fcmSchemas.js";
-import { messaging } from '../config/firebase.js';
+import { INotificationPayload, FcmMessage, FcmMessageTopic } from "./fcmSchemas";
+import { messaging } from '../config/firebase';
 
 
 export const subscribeToTopic = async (token: string, topic: string): Promise<void> => {
@@ -27,7 +27,7 @@ export const saveDeviceToken = async (
   userId: string,
   role: string,
   token: string,
-  platform: "web" | "ios" | "andriod"
+  platform: "web" | "ios" | "android"
 ): Promise<void> => {
   try {
     const upsertedToken = await DeviceToken.findOneAndUpdate(
@@ -84,10 +84,6 @@ export const sendToTopic = async (
       notification,
       data
     };
-    // if (data !== undefined) {
-    //   message.data = data;
-    // }
-
     const response = await messaging.send(message);
     console.log(`Successfully sent message to topic ${topic}:`, response);
   } catch (error) {

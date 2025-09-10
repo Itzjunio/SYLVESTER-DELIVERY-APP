@@ -1,5 +1,5 @@
-import app from './app.js'
-import { connectDB } from './shared/config/db.js';
+import {server} from './app'
+import { connectDB } from './shared/config/db';
 
 
 const PORT = process.env.PORT || 3000;
@@ -9,7 +9,7 @@ const startServer = async()=>{
   try{
     await connectDB();
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running at http://localhost:${PORT}`);
     });
 

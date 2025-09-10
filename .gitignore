@@ -3,7 +3,7 @@ node_modules/
 dist/
 .env
 *.log
-
+*.json
 # TypeScript
 *.tsbuildinfo
 

@@ -1,9 +1,6 @@
 import { Schema, model} from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { IUser } from '../../types/index.js';
-
-
-
+import { IUser } from '../../types/index';
 
 const UserSchema = new Schema<IUser>(
     {
@@ -69,12 +66,6 @@ UserSchema.pre('save', async function(next) {
         next(error);
     }
 });
-
-// UserSchema.pre(/^find/, function(this: Query<IUser, any>, next) {
-//     this.select('-password');
-//     next();
-//   });
-
 
 
 export const User = model<IUser>('User', UserSchema);

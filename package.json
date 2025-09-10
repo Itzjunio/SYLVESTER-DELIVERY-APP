@@ -4,10 +4,9 @@
   "description": "Delivery Website for online ordering and logistics \r ## structure",
   "main": "server.js",
   "scripts": {
-    "build": "tsc --build",
-    "start": "node ./backend/dist/server.js",
-    "dev": "nodemon --watch ./backend/src --exec \"node --loader ts-node/esm\" ./backend/src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node .dist/server.js",
+    "build": "tsc",
+    "dev": "ts-node-dev --respawn --transpile-only ./backend/src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -16,32 +15,29 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
+  "type": "commonjs",
   "bugs": {
     "url": "https://github.com/Itzjunio/SYLVESTER-DELIVERY-APP/issues"
   },
   "homepage": "https://github.com/Itzjunio/SYLVESTER-DELIVERY-APP#readme",
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
-    "firebase": "^12.2.1",
     "firebase-admin": "^13.5.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.18.0",
+    "mongoose": "^8.18.1",
     "nodemailer": "^7.0.6",
+    "socket.io": "^4.8.1",
     "zod": "^4.1.5"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/mongoose": "^5.11.96",
-    "@types/node": "^24.3.0",
+    "@types/node": "^24.3.1",
     "@types/nodemailer": "^7.0.1",
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "ts-node-dev": "^2.0.0"
   }
 }

@@ -3,24 +3,24 @@
   "compilerOptions": {
     // File Layout
     "rootDir": "./backend/src",
-    "outDir": "./backend/dist",
-    "moduleResolution": "nodenext",
-    // "allowImportingTsExtensions": true,
-    
+    "outDir": "./dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "esnext",
-
+    "esModuleInterop": true,
+    
     // "types": [],
     // For nodejs:
     // "lib": ["esnext"],
-    // "types": ["node"],
+    "types": ["node"],
     // and npm install -D @types/node
-
-    // "esModuleInterop": true,
-    // "forceConsistentCasingInFileNames": true,
+    "declarationDir": "./types",
+    "paths": {
+      "types": ["./types/index.d.ts"]
+    },
     // Other Outputs
     "sourceMap": true,
     "declaration": true,
@@ -33,7 +33,7 @@
     // Style Options
     "noImplicitReturns": true,
     // "noImplicitOverride": true,
-    "noUnusedLocals": true,
+    // "noUnusedLocals": true,
     "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
@@ -41,10 +41,11 @@
     // Recommended Options
     "strict": true,
     "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
+    // "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  "include": ["backend/src"]
 }
