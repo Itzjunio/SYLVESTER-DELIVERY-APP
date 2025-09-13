@@ -19,7 +19,7 @@ const getAccessTokenSecret = (): Secret => {
 
 const ACCESS_TOKEN_SECRET = getAccessTokenSecret();
 
-export const protect = (req: Request, res: Response<ApiResponse<any | null>>, next: NextFunction) => {
+export const protect = (allowedRoles: UserRole[] = []) => (req: Request, res: Response<ApiResponse<any | null>>, next: NextFunction) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(' ')[1];
     if (!token) {
@@ -31,6 +31,10 @@ export const protect = (req: Request, res: Response<ApiResponse<any | null>>, ne
             _id: new Types.ObjectId(decoded._id),
             role: decoded.role,
         };
+        if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
+            return res.status(403).json(serializeResponse('error', null, 'Access forbidden: Insufficient permissions.'));
+        }
+
         next();
     } catch (error: unknown) {
         console.error('Token verification error:', error);
@@ -40,4 +44,3 @@ export const protect = (req: Request, res: Response<ApiResponse<any | null>>, ne
         return res.status(500).json(serializeResponse('error', null, 'An unexpected error occurred during token verification.'));
     }
 };
-

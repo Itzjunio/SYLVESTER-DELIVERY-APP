@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { RestaurantModel, OrderModel } from './models';
+import { RestaurantModel, OrderModel } from '../shared/models';
 import { placeOrderSchema, getNearbyRestaurantsSchema } from './schemas';
 import mongoose , {Types} from 'mongoose';
 import { IMenuItem } from '../../types/';

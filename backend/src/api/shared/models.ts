@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { IOrder, IRestaurant} from '../../types/index';
+import { IOrder, IRestaurant} from '../../types/';
 
 const RestaurantSchema = new Schema<IRestaurant>({
     name: { type: String, required: true },

@@ -11,7 +11,7 @@ declare global {
     }
 }
 
-export type UserRole = 'customer' | 'vendor' | 'rider';
+export type UserRole = 'customer' | 'vendor' | 'rider' | 'admin';
 
 interface IRefreshTokenPayload {
     _id: string;

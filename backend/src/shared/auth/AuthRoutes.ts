@@ -12,7 +12,7 @@ authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/refresh-token", refreshToken);
 
-authRouter.use(protect);
+authRouter.use(protect());
 authRouter.use("/auth/forgot-password", forgotPasswordLimiter)
 
 authRouter.post("/forgot-password", forgotPassword);
