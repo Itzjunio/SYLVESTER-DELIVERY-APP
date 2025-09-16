@@ -8,4 +8,18 @@ export const authSchema = z.object({
 
 
 
+export const forgetPasswordSchema = z.object({
+    email: z.email().min(5).max(60),
 
+})
+export const resendVerificationCodeSchema = forgetPasswordSchema;
+
+export const verifyUserAccountSchema = forgetPasswordSchema.extend({
+    validateCode: z.number()
+})
+
+
+export const resetPasswordSchema = verifyUserAccountSchema.extend({
+    newPassword: z.string()
+    
+})

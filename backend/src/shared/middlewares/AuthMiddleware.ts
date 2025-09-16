@@ -32,7 +32,7 @@ export const protect = (allowedRoles: UserRole[] = []) => (req: Request, res: Re
             role: decoded.role,
         };
         if (allowedRoles.length > 0 && !allowedRoles.includes(req.user.role)) {
-            return res.status(403).json(serializeResponse('error', null, 'Access forbidden: Insufficient permissions.'));
+            return res.status(403).json(serializeResponse('error', null, `Access forbidden: Insufficient permissions. ${allowedRoles}`));
         }
 
         next();

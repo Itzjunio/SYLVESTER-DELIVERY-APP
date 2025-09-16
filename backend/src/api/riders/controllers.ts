@@ -1,41 +1,128 @@
-import { Response, Request } from "express";
+import { Response, Request, NextFunction } from "express";
 import { OrderModel } from "../shared/models";
 import { serializeResponse } from "../../profile";
+import { orderStausSchema } from "./schema";
+import { isValidObjectId } from "../../shared/utils/validators";
+import { getSocketServerInstance } from "../../shared/utils/socket";
 
-// TODO: VALIDATE ALL INCOMING DATA
+export const riderDashBoard = async (req: Request, res: Response, next: NextFunction) => {
+    const riderId = req.user?._id;
+    if (!riderId) {
+        const err = new Error('Authentication failed. Rider ID not found.') as any;
+        err.statusCode = 401;
+        return next(err);
+    }
+    const history = await OrderModel.find({ riderId: riderId })
+        .sort({ createdAt: -1 })
+        .select('orderStatus createdAt deliveryAddress customerId');
 
-export const orderAssigned = async(req: Request, res: Response) =>{
-  try {
-    const  riderId  = req.user?._id;
-    const orders = await OrderModel.find({
-      riderId: riderId,
-      orderStatus: { $in: ['accepted', 'picked_up'] }
-    }).populate('restaurant');
-    res.json(serializeResponse('success', {orders}, 'Order Assigned'));
-  } catch (err: unknown) {
-    console.error(err);
-    res.status(500).send('Server Error');
+    return res.status(200).json(serializeResponse('success', { history }, 'Rider order history retrieved successfully.'));
+};
+
+export const viewOrderDetails = async (req: Request, res: Response, next: NextFunction) => {
+    const { orderId } = req.params;
+    const riderId = req.user?._id;
+
+    if (!riderId) {
+        const err = new Error('Authentication failed. Rider ID not found.') as any;
+        err.statusCode = 401;
+        return next(err);
+    }
+    if (!orderId) {
+        const err = new Error('Order ID not found in request parameters.') as any;
+        err.statusCode = 400;
+        return next(err);
+    }
+
+    isValidObjectId(orderId);
+
+    const orderDetails = await OrderModel.findOne({ _id: orderId, riderId: riderId });
+    if (!orderDetails) {
+        const err = new Error('Order not found or not authorized.') as any;
+        err.statusCode = 404;
+        return next(err);
+    }
+    return res.status(200).json(serializeResponse('success', { orderDetails }, 'Details of order retrieved successfully.'));
+};
+
+export const markStatus = async (req: Request, res: Response, next: NextFunction) => {
+    const riderId = req.user?._id;
+    if (!riderId) {
+        const err = new Error('Authentication failed. Rider ID not found.') as any;
+        err.statusCode = 401;
+        return next(err);
+    }
+
+    const parsedOrderBody = orderStausSchema.safeParse(req.body);
+    if (!parsedOrderBody.success) {
+        const issues = parsedOrderBody.error.issues.map(issue => issue.message).join(', ');
+        const err = new Error(`Invalid request body: ${issues}`) as any;
+        err.statusCode = 400;
+        return next(err);
+    }
+    const { status } = parsedOrderBody.data;
+
+    const { orderId } = req.params;
+    if (!orderId) {
+        const err = new Error('Order ID not found in request parameters.') as any;
+        err.statusCode = 400;
+        return next(err);
+    }
+    
+    isValidObjectId(orderId);
+
+    const updatedOrder = await OrderModel.findOneAndUpdate(
+        { _id: orderId, riderId: riderId },
+        { orderStatus: status },
+        { new: true, runValidators: true }
+    );
+
+    if (!updatedOrder) {
+        const err = new Error('Order not found or not authorized.') as any;
+        err.statusCode = 404;
+        return next(err);
+    }
+    return res.json(serializeResponse('success', { order: updatedOrder }, 'Order status updated successfully.'));
+};
+
+
+export const acceptOrderAssignment = async (req: Request, res: Response, next: NextFunction) => {
+  const riderId = req.user?._id;
+  if (!riderId) {
+    const err = new Error('Authentication required.') as any;
+    err.statusCode = 401;
+    return next(err);
   }
-}
+  const { id } = req.params;
+  if (!id){
+    const err = new Error('id not found') as any;
+    err.statusCode = 404;
+    return next(err);
 
-export const orderStatus = async(req: Request, res: Response) =>{
+  }
+  isValidObjectId(id);
   try {
-    const  riderId  = req.user?._id;
-    const { status } = req.body;
-    let order = await OrderModel.findById(req.params.id);
+    const order = await OrderModel.findOne({
+      _id: id,
+      riderId,
+      orderStatus: 'accepted',
+    });
+
     if (!order) {
-      return res.status(404).json(serializeResponse('error', null , 'Order not found' ));
+      const err = new Error('Order not found or not available for assignment.') as any;
+      err.statusCode = 404;
+      return next(err);
     }
-
-    if (order.riderId !== riderId) {
-      return res.status(401).json(serializeResponse('error', null, 'Not authorized' ));
-    }
-    order.orderStatus = status;
+    order.orderStatus = 'in-transit';
+    order.pickedUpAt = new Date();
     await order.save();
-    return res.json(serializeResponse('success', {order}, 'Order given status'));
-  } catch (err: unknown) {
-    console.error(err);
-    return res.status(500).json(serializeResponse('error', null, 'An unexpected error occurred.'));
+    
+    const io = getSocketServerInstance();
+    io.to(`user_${order.customerId}`).emit("order:status_updated", { orderId: order._id, newStatus: order.orderStatus });
+
+    return res.status(200).json(serializeResponse('success', { order }, 'Order assignment accepted successfully.'));
+  } catch (error) {
+    next(error);
   }
-}
+};
 

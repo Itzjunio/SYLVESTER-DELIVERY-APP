@@ -30,12 +30,15 @@ interface IUser extends Document {
     role: UserRole;
     mobile?: string;
     validated: Boolean;
-    resetCode?: string | undefined;
+    validateCode?: number | undefined
+    validationCodeExpireDate?: Date | undefined
+    resetCode?: number | undefined;
     resetExpiry?: Date | undefined;
     failedAttempts: number;
     lockUntil?: Date | undefined ;
     createdAt: Date;
     updatedAt: Date;
+    isActive: boolean;
 }
 
 
@@ -85,5 +88,9 @@ interface IOrder extends Document {
     orderStatus: 'pending' | 'accepted' | 'in-transit' | 'delivered' | 'cancelled';
     paymentMethod: string;
     deliveryAddress: string;
+    createdAt: Date
+    rejectionReason?: string | undefined;
+    pickedUpAt?: Date;     
+    deliveredAt?: Date; 
 }
 export  {IOrder, IRestaurant, IOrderItem, IMenuItem, ILocation, Iaudit, IUser, IAuthenticatedUser, IRefreshTokenPayload}

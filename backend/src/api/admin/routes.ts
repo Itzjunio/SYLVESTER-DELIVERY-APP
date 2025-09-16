@@ -1,16 +1,24 @@
 import { Router } from "express"
-import { protect } from "../../shared/auth/AuthMiddleware";
-import authRouter from "../../shared/auth/AuthRoutes";
+import { protect } from "../../shared/middlewares/AuthMiddleware";
+import 
+    {
+    adminDashBoard,
+    users, orders,
+    orderStatus,
+    getRiderPerformanceReport,
+    deactivateUser
+ } from "./controllers";
 
-import { adminDashBoard, users, orders, orderStatus } from "./controllers";
+
 const adminRouter = Router();
 
-authRouter.use(protect(['admin']));
+adminRouter.use(protect(['admin']));
 
-authRouter.get("/dashboard", adminDashBoard)
-authRouter.get("/users", users)
-authRouter.get("/orders", orders)
-authRouter.get("/orders/:id/status", orderStatus)
-
+adminRouter.get("/dashboard", adminDashBoard)
+adminRouter.get("/users", users)
+adminRouter.get("/orders", orders)
+adminRouter.get("/orders/:orderId/status", orderStatus)
+adminRouter.get("/rider/performance", getRiderPerformanceReport)
+adminRouter.put("/user/:userId/deactivate", deactivateUser)
 
 export default adminRouter;

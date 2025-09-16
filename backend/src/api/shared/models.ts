@@ -46,6 +46,9 @@ const OrderSchema = new Schema<IOrder>({
     },
     paymentMethod: { type: String, required: true },
     deliveryAddress: { type: String, required: true },
+    rejectionReason: { type: String },
+    pickedUpAt: { type: Date },
+    deliveredAt: { type: Date },
 }, { timestamps: true });
 
 

@@ -27,17 +27,23 @@ const getSecrets = () => {
 
 const secrets = getSecrets();
 
-export const signVerificationToken = (email: string) => {
-    return jwt.sign({ email }, secrets.jwtSecret, { expiresIn: '24h' });
+export const signVerificationToken = async (duratioMinutes: number= 15) => {
+    const expiryTime = new Date();
+    expiryTime.setMinutes(expiryTime.getMinutes() + duratioMinutes);
+    const length = 6;
+    const bytes = crypto.randomBytes(Math.ceil(length/2));
+    const hex = bytes.toString('hex')
+    const tokenDigits = parseInt(hex, 16).toString().substring(0, length)
+    return {expiryTime, tokenDigits};
 };
 
-export function verifyJwtToken(token: string): { email: string } | null {
-    try {
-        return jwt.verify(token, secrets.jwtSecret) as { email: string };
-    } catch {
-        return null;
-    }
-}
+// export function verifyJwtToken(token: string): { email: string } | null {
+//     try {
+//         return jwt.verify(token, secrets.jwtSecret) as { email: string };
+//     } catch {
+//         return null;
+//     }
+// }
 
 export function decodeToken(token: string): IRefreshTokenPayload  {
     return jwt.verify(token, secrets.refreshTokenSecret) as IRefreshTokenPayload;
@@ -82,8 +88,8 @@ export function logAction(userId: string, action: string, req: any) {
     });
 }
 
-export function generateRandomToken(lentgth= 32){
-    const rawToken = crypto.randomBytes(lentgth).toString('hex');
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-    return {rawToken , hashedToken}
-}
+// export function generateRandomToken(lentgth= 32){
+//     const rawToken = crypto.randomBytes(lentgth).toString('hex');
+//     const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+//     return {rawToken , hashedToken}
+// }

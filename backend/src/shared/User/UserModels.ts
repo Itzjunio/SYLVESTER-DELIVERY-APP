@@ -1,6 +1,7 @@
 import { Schema, model} from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser } from '../../types/index';
+import { signVerificationToken } from '../utils/utils';
 
 const UserSchema = new Schema<IUser>(
     {
@@ -31,6 +32,14 @@ const UserSchema = new Schema<IUser>(
             type: Boolean,
             default: false
         },
+        validateCode:{
+            type: Number,
+            select: false
+        },
+        validationCodeExpireDate:{
+            type: Date,
+            select: false
+        },
         resetCode: {
             type: String,
             select: false
@@ -42,9 +51,13 @@ const UserSchema = new Schema<IUser>(
         },
         failedAttempts: {
             type: Number,
-            default: 0 },
+            default: 0 
+        },
         lockUntil: { type: Date },
-
+        isActive: {
+            type: Boolean,
+            default: true,
+        }
     },
     {
         timestamps: true, 
@@ -53,18 +66,27 @@ const UserSchema = new Schema<IUser>(
 );
 
 
-UserSchema.pre('save', async function(next) {
-    if (!this.isModified('password') || !this.password) {
-        return next();
-    }
 
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+UserSchema.pre('save', async function(next) {
+        const user = this;
+        if (user.isModified('password') && user.password) {
+            try {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            } catch (error: any) {
+                return next(error);
+            }
+        }
+        if (user.isNew) {
+            try {
+                const { expiryTime, tokenDigits } = await signVerificationToken();
+                user.validateCode = parseInt(tokenDigits);
+                user.validationCodeExpireDate = expiryTime;
+            } catch (error: any) {
+                return next(error);
+            }
+        }
         next();
-    } catch (error: any) {
-        next(error);
-    }
 });
 
 
