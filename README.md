@@ -108,7 +108,7 @@ curl -X POST https://api.example.com/auth/login \
 
 Errors: 400 Invalid credentials, 403 Not validated, 429 Too many attempts.
 
-### POST `/resend-code`
+### POST `/verification/resend`
 Resend email verification code.
 ```json
 {
@@ -123,7 +123,7 @@ curl -X POST https://api.example.com/auth/resend-code \
 ```
 *200:* Code sent. Errors: 404 User not found.
 
-### POST `/verify`
+### POST `/verification`
 Validate account.
 ```json
 {
@@ -180,7 +180,7 @@ curl -X PUT https://api.example.com/auth/reset-password \
 ```
 *200:* Password reset successful. Error: 400 Invalid/expired code.
 
-### PUT `/register-devicetoken` *(protected)*
+### PUT `/device-token` *(protected)*
 Register device token.
 ```json
 {
@@ -224,7 +224,7 @@ curl -X GET https://api.example.com/user/profile \
 ```
 *200:* Returns profile. Errors: 401 Unauthorized, 404 Not found.
 
-### PUT `/update`
+### PUT `/profile`
 Update profile.
 ```json
 {
@@ -282,7 +282,7 @@ curl -X GET https://api.example.com/api/customer/orders/history \
 ```
 *200:* Returns orders array.
 
-### POST `/order`
+### POST `/orders`
 Place a new order.
 ```json
 {
@@ -311,6 +311,15 @@ curl -X GET https://api.example.com/api/customer/orders/<orderId>/status \
   -H "Authorization: Bearer <access_token>"
 ```
 *200:* Returns order status. Errors: 400 Invalid ID, 404 Not found.
+
+### GET `/orders/scheduled`
+Retrieve all scheduled orders.
+**Example cURL**
+```bash
+curl -X GET https://api.example.com/api/customer/orders/scheduled \
+  -H "Authorization: Bearer <access_token>"
+```
+*200:* Returns scheduled orders array.
 
 ---
 
@@ -415,7 +424,7 @@ curl -X PUT https://api.example.com/api/vendor/orders/<orderId>/status \
 ```
 *200:* Returns updated order. Errors: 400 Invalid status, 404 Order not found.
 
-### PUT `/restaurant/:restaurantId/item/:itemName/availability`
+### PATCH `/menu/items/:itemId/availability`
 Update menu item availability.
 ```json
 {
@@ -424,21 +433,78 @@ Update menu item availability.
 ```
 **Example cURL**
 ```bash
-curl -X PUT https://api.example.com/api/vendor/restaurant/<restaurantId>/item/<itemName>/availability \
+curl -X PATCH https://api.example.com/api/vendor/menu/<restaurantId>/items/<itemId>/availability \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{"isAvailable":true}'
 ```
-*200:* Updated successfully. Error: 404 Restaurant/item required.
+*204:* . Error: 404 Restaurant/item required.
 
-### PUT `/orders/:orderId/reject`
+### PUT `/orders/:orderId/actions/reject`
 Reject an order.
 **Example cURL**
 ```bash
-curl -X PUT https://api.example.com/api/vendor/orders/<orderId>/reject \
+curl -X PUT https://api.example.com/api/vendor/orders/<orderId>/action/reject \
   -H "Authorization: Bearer <access_token>"
 ```
 *200:* Rejected successfully. Errors: 401 ID not found, 404 Not pending.
+
+### GET `/menu/items:itemId`
+get item
+**Example cURL**
+```bash
+curl -X GET https://api.example.com/api/vendor/menu/items<itemId> \
+  -H "Authorization: Bearer <access_token>"
+```
+*200:* Returns restuarant item. 404 Not Found
+
+### PATCH `/menu/items`
+update menu item.
+```json
+{
+  "name": "Pizza",
+  "description": "Delicious pizza",
+  "price": 300,
+  "image": "https://example.com/pizza.jpg",
+  "category": "Main",
+  "isAvailable": true
+}
+```
+**Example cURL**
+```bash
+curl -X PATCH https://api.example.com/api/vendor/menu/items \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Pizza","description":"Delicious pizza","price":500,"image":"https://example.com/pizza.jpg","category":"Main","isAvailable":false}'
+```
+*204:* No Content. Error: 400 Invalid body. 404 Not Found
+
+### DELETE `/menu/items:itemId`
+get item
+**Example cURL**
+```bash
+curl -X DELETE https://api.example.com/api/vendor/menu/items<itemId> \
+  -H "Authorization: Bearer <access_token>"
+```
+*204:* . 404 Not Found
+
+### PATCH `/availability`
+
+Update restaurant availability.
+```json
+{
+  "isActive": true
+}
+```
+**Example cURL**
+```bash
+curl -X PATCH https://api.example.com/api/vendor/availability \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"isActive": true}'
+```
+*204:* . Error: 404 Restaurant id required.
+
 
 ---
 

@@ -13,12 +13,17 @@ export const initializeSocketServer = (server: HttpServer): void => {
 
   io.on("connection", (socket: Socket) => {
     console.log(`New WebSocket client connected: ${socket.id}`);
-    socket.on("rider:locationUpdate", (data: { riderId: string; lat: number; lng: number }) => {
-      console.log(`Rider ${data.riderId} moved to [${data.lat}, ${data.lng}]`);
+    socket.on(
+      "rider:locationUpdate",
+      (data: { riderId: string; lat: number; lng: number }) => {
+        console.log(
+          `Rider ${data.riderId} moved to [${data.lat}, ${data.lng}]`
+        );
 
-      io.to(`rider_${data.riderId}`).emit("rider:locationUpdate", data);
-      io.to("admin_tracking").emit("rider:locationUpdate", data);
-    });
+        io.to(`rider_${data.riderId}`).emit("rider:locationUpdate", data);
+        io.to("admin_tracking").emit("rider:locationUpdate", data);
+      }
+    );
 
     socket.on("joinRoom", (room: string) => {
       socket.join(room);

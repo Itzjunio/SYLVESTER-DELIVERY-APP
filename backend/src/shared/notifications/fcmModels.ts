@@ -1,7 +1,6 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { IDeviceToken } from "./fcmSchemas";
 
-
 export interface IDeviceTokenDoc extends IDeviceToken, Document {}
 
 const deviceTokenSchema = new Schema<IDeviceTokenDoc>({
@@ -12,4 +11,7 @@ const deviceTokenSchema = new Schema<IDeviceTokenDoc>({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const DeviceToken = mongoose.model<IDeviceTokenDoc>("DeviceToken", deviceTokenSchema);
+export const DeviceToken = mongoose.model<IDeviceTokenDoc>(
+  "DeviceToken",
+  deviceTokenSchema
+);

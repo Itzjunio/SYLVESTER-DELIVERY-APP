@@ -6,7 +6,7 @@ dist/
 *.json
 # TypeScript
 *.tsbuildinfo
-
+updates.md
 # OS
 .DS_Store
 Thumbs.db

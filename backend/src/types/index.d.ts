@@ -1,96 +1,109 @@
-
-import { Document, Schema, Types } from 'mongoose';
-import { Request, Response } from 'express';
-
+import { Document, Schema, Types } from "mongoose";
+import { Request, Response } from "express";
 
 declare global {
-    namespace Express {
-        interface Request {
-            user?: IUser | IAuthenticatedUser;
-        }
+  namespace Express {
+    interface Request {
+      user?: IUser | IAuthenticatedUser;
     }
+  }
 }
 
-export type UserRole = 'customer' | 'vendor' | 'rider' | 'admin';
+export type UserRole = "customer" | "vendor" | "rider" | "admin";
 
 interface IRefreshTokenPayload {
-    _id: string;
-    role: string;
+  _id: string;
+  role: string;
 }
 interface IAuthenticatedUser {
-    _id: Types.ObjectId;
-    role: UserRole;
+  _id: Types.ObjectId;
+  role: UserRole;
 }
-
 
 interface IUser extends Document {
-    _id: Types.ObjectId;
-    email: string;
-    password?: string;
-    role: UserRole;
-    mobile?: string;
-    validated: Boolean;
-    validateCode?: number | undefined
-    validationCodeExpireDate?: Date | undefined
-    resetCode?: number | undefined;
-    resetExpiry?: Date | undefined;
-    failedAttempts: number;
-    lockUntil?: Date | undefined ;
-    createdAt: Date;
-    updatedAt: Date;
-    isActive: boolean;
+  _id: Types.ObjectId;
+  email: string;
+  password?: string;
+  role: UserRole;
+  mobile?: string;
+  validated: Boolean;
+  validateCode?: number | undefined;
+  validationCodeExpireDate?: Date | undefined;
+  resetCode?: number | undefined;
+  resetExpiry?: Date | undefined;
+  failedAttempts: number;
+  lockUntil?: Date | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+  isActive: boolean;
 }
 
-
-interface Iaudit extends Document{
-    userId: Types.ObjectId;
-    action: string;
-    ip: string;
-    userAgent: string;
-    createdAt: Date;
+interface Iaudit extends Document {
+  userId: Types.ObjectId;
+  action: string;
+  ip: string;
+  userAgent: string;
+  createdAt: Date;
 }
-
 
 interface ILocation {
-    type: 'Point';
-    coordinates: number[];
+  type: "Point";
+  coordinates: number[];
 }
 interface IMenuItem {
-    name: string;
-    description?: string;
-    price: number;
-    image?: string;
-    category?: string;
-    isAvailable?: boolean;
+  name: string;
+  description?: string;
+  price: number;
+  image?: string;
+  category?: string;
+  isAvailable?: boolean;
 }
 
 interface IOrderItem {
-    name: string;
-    quantity: number;
-    price: number;
+  name: string;
+  quantity: number;
+  price: number;
 }
 
 interface IRestaurant extends Document {
-    name: string;
-    owner: Types.ObjectId;
-    location: ILocation;
-    menu: IMenuItem[];
-    cuisine: string[];
-    address: string;
+  name: string;
+  owner: Types.ObjectId;
+  location: ILocation;
+  menu: IMenuItem[];
+  cuisine: string[];
+  address: string;
+  isActive: boolean
 }
 
 interface IOrder extends Document {
-    customerId: Types.ObjectId;
-    restaurantId: Types.ObjectId;
-    riderId?: Types.ObjectId;
-    items: IOrderItem[];
-    totalAmount: number;
-    orderStatus: 'pending' | 'accepted' | 'in-transit' | 'delivered' | 'cancelled';
-    paymentMethod: string;
-    deliveryAddress: string;
-    createdAt: Date
-    rejectionReason?: string | undefined;
-    pickedUpAt?: Date;     
-    deliveredAt?: Date; 
+  customerId: Types.ObjectId;
+  restaurantId: Types.ObjectId;
+  riderId?: Types.ObjectId;
+  items: IOrderItem[];
+  totalAmount: number;
+  orderStatus:
+    | "pending"
+    | "accepted"
+    | "in-transit"
+    | "delivered"
+    | "scheduled"
+    | "cancelled";
+  paymentMethod: string;
+  deliveryAddress: string;
+  createdAt: Date;
+  rejectionReason?: string | undefined;
+  pickedUpAt?: Date;
+  deliveredAt?: Date;
+  scheduledFor?: Date;
 }
-export  {IOrder, IRestaurant, IOrderItem, IMenuItem, ILocation, Iaudit, IUser, IAuthenticatedUser, IRefreshTokenPayload}
+export {
+  IOrder,
+  IRestaurant,
+  IOrderItem,
+  IMenuItem,
+  ILocation,
+  Iaudit,
+  IUser,
+  IAuthenticatedUser,
+  IRefreshTokenPayload,
+};

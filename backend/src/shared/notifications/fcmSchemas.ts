@@ -1,14 +1,10 @@
-
 import { Types } from "mongoose";
 import { z } from "zod";
 
-
 export const IDeviceTokenValidate = z.object({
-  userId: z
-    .string()
-    .refine((val) => Types.ObjectId.isValid(val), {
-      message: "Invalid ObjectId",
-    }),
+  userId: z.string().refine((val) => Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
   token: z.string(),
   platform: z.enum(["web", "ios", "android"]),
   role: z.enum(["customer", "vendor", "rider"]),
@@ -17,27 +13,26 @@ export const IDeviceTokenValidate = z.object({
     .transform((val) => (typeof val === "string" ? new Date(val) : val)),
 });
 
-
 type IDeviceToken = Omit<z.infer<typeof IDeviceTokenValidate>, "userId"> & {
   userId: Types.ObjectId;
 };
 
 interface INotificationPayload {
-    title: string;
-    body: string;
-    imgUrl?: string;
-  }
+  title: string;
+  body: string;
+  imgUrl?: string;
+}
 
 interface FcmMessage {
   notification: INotificationPayload;
   token: string;
-  data?: { [key: string]: string }
+  data?: { [key: string]: string };
 }
 
 interface FcmMessageTopic {
   topic: string;
   notification: INotificationPayload;
-  data?: { [key: string]: string }
+  data?: { [key: string]: string };
 }
-  
-export type {INotificationPayload, FcmMessage, FcmMessageTopic, IDeviceToken};
+
+export type { INotificationPayload, FcmMessage, FcmMessageTopic, IDeviceToken };

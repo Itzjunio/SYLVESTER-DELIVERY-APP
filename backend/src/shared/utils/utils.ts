@@ -1,40 +1,39 @@
-import { IRefreshTokenPayload, IUser} from "../../types";
+import { IRefreshTokenPayload, IUser } from "../../types";
 import rateLimit from "express-rate-limit";
 import jwt, { Secret } from "jsonwebtoken";
-import { AuditLog } from './schemas';
-import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
-import dotenv from 'dotenv';
-
+import { AuditLog } from "./schemas";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-
 const getSecrets = () => {
-    const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, JWT_SECRET } = process.env;
+  const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, JWT_SECRET } = process.env;
 
-    if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET || !JWT_SECRET) {
-        throw new Error('ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, JWT_SECRET must be defined in environment variables');
-    }
+  if (!ACCESS_TOKEN_SECRET || !REFRESH_TOKEN_SECRET || !JWT_SECRET) {
+    throw new Error(
+      "ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET, JWT_SECRET must be defined in environment variables"
+    );
+  }
 
-    return {
-        accessTokenSecret: ACCESS_TOKEN_SECRET as Secret,
-        refreshTokenSecret: REFRESH_TOKEN_SECRET as Secret,
-        jwtSecret: JWT_SECRET as Secret,
-    };
+  return {
+    accessTokenSecret: ACCESS_TOKEN_SECRET as Secret,
+    refreshTokenSecret: REFRESH_TOKEN_SECRET as Secret,
+    jwtSecret: JWT_SECRET as Secret,
+  };
 };
-
 
 const secrets = getSecrets();
 
-export const signVerificationToken = async (duratioMinutes: number= 15) => {
-    const expiryTime = new Date();
-    expiryTime.setMinutes(expiryTime.getMinutes() + duratioMinutes);
-    const length = 6;
-    const bytes = crypto.randomBytes(Math.ceil(length/2));
-    const hex = bytes.toString('hex')
-    const tokenDigits = parseInt(hex, 16).toString().substring(0, length)
-    return {expiryTime, tokenDigits};
+export const signVerificationToken = async (duratioMinutes: number = 15) => {
+  const expiryTime = new Date();
+  expiryTime.setMinutes(expiryTime.getMinutes() + duratioMinutes);
+  const length = 6;
+  const bytes = crypto.randomBytes(Math.ceil(length / 2));
+  const hex = bytes.toString("hex");
+  const tokenDigits = parseInt(hex, 16).toString().substring(0, length);
+  return { expiryTime, tokenDigits };
 };
 
 // export function verifyJwtToken(token: string): { email: string } | null {
@@ -45,47 +44,50 @@ export const signVerificationToken = async (duratioMinutes: number= 15) => {
 //     }
 // }
 
-export function decodeToken(token: string): IRefreshTokenPayload  {
-    return jwt.verify(token, secrets.refreshTokenSecret) as IRefreshTokenPayload;
+export function decodeToken(token: string): IRefreshTokenPayload {
+  return jwt.verify(token, secrets.refreshTokenSecret) as IRefreshTokenPayload;
 }
 
-export const generateTokens = (user: IUser): { accessToken: string; refreshToken: string } => {
-    const accessToken = jwt.sign(
-        { _id: user._id, role: user.role },
-        secrets.accessTokenSecret,
-        { expiresIn: '15m' }
-    );
+export const generateTokens = (
+  user: IUser
+): { accessToken: string; refreshToken: string } => {
+  const accessToken = jwt.sign(
+    { _id: user._id, role: user.role },
+    secrets.accessTokenSecret,
+    { expiresIn: "15m" }
+  );
 
-    const refreshToken = jwt.sign(
-        { _id: user._id, role: user.role },
-        secrets.refreshTokenSecret,
-        { expiresIn: '7d' }
-    );
+  const refreshToken = jwt.sign(
+    { _id: user._id, role: user.role },
+    secrets.refreshTokenSecret,
+    { expiresIn: "7d" }
+  );
 
-    return { accessToken, refreshToken };
+  return { accessToken, refreshToken };
 };
 
-
 export const forgotPasswordLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
+  windowMs: 15 * 60 * 1000,
   max: 3,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many password reset attempts. Try again later." },
 });
 
-export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
-    return await bcrypt.compare(password, hashedPassword);
+export const comparePassword = async (
+  password: string,
+  hashedPassword: string
+): Promise<boolean> => {
+  return await bcrypt.compare(password, hashedPassword);
 };
 
-
 export function logAction(userId: string, action: string, req: any) {
-    AuditLog.create({
-        userId,
-        action,
-        ip: req.ip,
-        userAgent: req.headers["user-agent"],
-    });
+  AuditLog.create({
+    userId,
+    action,
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
 }
 
 // export function generateRandomToken(lentgth= 32){

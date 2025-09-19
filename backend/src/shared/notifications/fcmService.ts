@@ -1,27 +1,35 @@
 import { DeviceToken } from "./fcmModels";
 import { Types } from "mongoose";
-import { INotificationPayload, FcmMessage, FcmMessageTopic } from "./fcmSchemas";
-import { messaging } from '../config/firebase';
+import {
+  INotificationPayload,
+  FcmMessage,
+  FcmMessageTopic,
+} from "./fcmSchemas";
+import { messaging } from "../config/firebase";
 
-
-export const subscribeToTopic = async (token: string, topic: string): Promise<void> => {
+export const subscribeToTopic = async (
+  token: string,
+  topic: string
+): Promise<void> => {
   try {
     await messaging.subscribeToTopic(token, topic);
     console.log(`Successfully subscribed token to topic: ${topic}`);
   } catch (error) {
-    console.error('Error subscribing to topic:', error);
+    console.error("Error subscribing to topic:", error);
   }
 };
 
-export const unSubscribeToTopic = async (token: string, topic: string): Promise<void> => {
+export const unSubscribeToTopic = async (
+  token: string,
+  topic: string
+): Promise<void> => {
   try {
     await messaging.unsubscribeFromTopic(token, topic);
     console.log(`Successfully unsubscribed token to topic: ${topic}`);
   } catch (error) {
-    console.error('Error unsubscribing to topic:', error);
+    console.error("Error unsubscribing to topic:", error);
   }
 };
-
 
 export const saveDeviceToken = async (
   userId: string,
@@ -45,25 +53,27 @@ export const saveDeviceToken = async (
   }
 };
 
-
 export const sendPushNotification = async (
-    userId: string,
-    notification: INotificationPayload,
-    data: { [key: string]: string }
+  userId: string,
+  notification: INotificationPayload,
+  data: { [key: string]: string }
 ): Promise<void> => {
   try {
-    const deviceTokenDoc = await DeviceToken.findOne({ userId: new Types.ObjectId(userId) });
+    const deviceTokenDoc = await DeviceToken.findOne({
+      userId: new Types.ObjectId(userId),
+    });
     if (!deviceTokenDoc) {
-      console.log(`No device token found for user ID: ${userId}. Notification not sent.`);
+      console.log(
+        `No device token found for user ID: ${userId}. Notification not sent.`
+      );
       return;
     }
 
     const message: FcmMessage = {
-        token: deviceTokenDoc.token,
-        notification,
-        data,
+      token: deviceTokenDoc.token,
+      notification,
+      data,
     };
-
 
     const response = await messaging.send(message);
     console.log("Successfully sent message:", response);
@@ -82,7 +92,7 @@ export const sendToTopic = async (
     const message: FcmMessageTopic = {
       topic,
       notification,
-      data
+      data,
     };
     const response = await messaging.send(message);
     console.log(`Successfully sent message to topic ${topic}:`, response);

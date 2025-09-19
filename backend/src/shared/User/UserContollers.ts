@@ -9,7 +9,7 @@ export const getProfile = async (req: Request, res: Response, next: NextFunction
     if (!userId) {
         const err = new Error("Authentication required.") as any;
         err.statusCode = 401;
-        return next(err); 
+        return next(err);
     }
     const profileData = await User.findById(userId);
     if (!profileData) {
@@ -51,6 +51,6 @@ export const updateProfile = async (
         err.statusCode = 404;
         return next(err);
     }
-    return res.status(200).json(serializeResponse('success', updatedUser, "Profile updated successfully."));
+    return res.status(204).end();
 };
 
