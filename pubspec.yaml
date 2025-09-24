@@ -1,0 +1,51 @@
+name: rider_app
+description: "Rider Delivery App - Professional delivery platform with web, mobile, and desktop support"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Core dependencies
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10
+
+  # Web-specific dependencies
+  universal_html: ^2.2.4
+  url_launcher: ^6.2.2
+  shared_preferences: ^2.2.2
+
+  # State management
+  provider: ^6.1.1
+
+  # Maps and location (for web)
+  webview_flutter: ^4.4.2
+
+  # HTTP client
+  http: ^1.1.0
+
+  # Image handling
+  cached_network_image: ^3.3.0
+
+  # Animations
+  lottie: ^2.7.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # Web-specific dev dependencies
+  build_web_compilers: ^4.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    # Removed animations and fonts entries due to missing directories/files
