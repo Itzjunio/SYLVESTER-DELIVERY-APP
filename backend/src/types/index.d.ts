@@ -36,6 +36,8 @@ interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
   isActive: boolean;
+  status: "active" | "suspended";
+  notifications?: string[] | null;
 }
 
 interface Iaudit extends Document {
@@ -72,7 +74,24 @@ interface IRestaurant extends Document {
   menu: IMenuItem[];
   cuisine: string[];
   address: string;
-  isActive: boolean
+  isActive: boolean;
+}
+
+interface IDisputes {
+  issue: string;
+  status: "resolved" | "pending";
+  resolutionNotes: string;
+  createdAt: Date;
+}
+
+
+interface IPayOut extends Document {
+  targetId: Types.ObjectId;
+  amount: number;
+  method: 'mtn' | 'vodafone' | 'airtel' | 'card';
+  status: 'pending' | 'processed' | 'failed';
+  processedBy: Types.ObjectId;
+  createdAt: Date;
 }
 
 interface IOrder extends Document {
@@ -87,10 +106,16 @@ interface IOrder extends Document {
     | "in-transit"
     | "delivered"
     | "scheduled"
-    | "cancelled";
-  paymentMethod: string;
+    | "cancelled"
+    | "refunded";
+  totalAmount: number;
+  assignedBy: Types.ObjectId;
+  rating: number | undefined;
+  paymentStatus: 'pending' | 'paid' | 'failed';
+  comment: string | undefined;
   deliveryAddress: string;
   createdAt: Date;
+  notifications: string[] | undefined;
   rejectionReason?: string | undefined;
   pickedUpAt?: Date;
   deliveredAt?: Date;
@@ -106,4 +131,6 @@ export {
   IUser,
   IAuthenticatedUser,
   IRefreshTokenPayload,
+  IPayOut,
+  IDisputes,
 };

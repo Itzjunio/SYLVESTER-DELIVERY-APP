@@ -269,3 +269,15 @@ export const getCustomerScheduledOrders = async (
     next(err);
   }
 };
+
+export const rating = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {};
+
+// todo: ...
+export const filter = (req: Request, res: Response, next: NextFunction) => {
+  const { Italian, minRating, maxDeliveryTime } = req.query;
+
+};

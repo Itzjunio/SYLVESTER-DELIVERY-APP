@@ -19,6 +19,8 @@ import {
 } from "./AuthSchemas";
 import { sendMail } from "../utils/emailUtils";
 import { User } from "../User/UserModels";
+import { unSubscribeToTopic } from "../notifications/fcmService";
+import { isValidObjectId } from "../utils/validators";
 
 export const register = async (
   req: Request,
@@ -180,7 +182,16 @@ export const refreshToken = async (
   }
 };
 
-export const logout = (_req: Request, res: Response) => {
+export const logout = async(req: Request, res: Response, next: NextFunction) => {
+  const token = req.user?._id;
+  const role = req.user?.role;
+  if (!token || !role) {
+    const err = new Error("Authentication required.") as any;
+    err.statusCode = 401;
+    return next(err);
+  }
+  isValidObjectId(token.toString())
+  await unSubscribeToTopic(token.toString(), role);
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

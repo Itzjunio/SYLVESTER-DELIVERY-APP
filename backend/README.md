@@ -32,7 +32,7 @@ The server runs at **http://127.0.0.1:3000**.
 ### Environment Variables (.env)
 
 ```env
-MONGODB_URI=mongodb://localhost:<password>/<collection name>
+MONGODB_URI=mongodb:// ....
 ACCESS_TOKEN_SECRET=""
 REFRESH_TOKEN_SECRET=""
 JWT_SECRET=""
@@ -40,8 +40,24 @@ NODE_ENV=development # or production
 APP_URL=""
 EMAIL_USER=""
 EMAIL_PASS=""
+FIREBASE_SERVICE_ACCOUNT=""
 ```
+```
+project-root/
+├─ backend/
+│  ├─ Dockerfile
+│  ├─ .env
+│  ├─ food-delivery.json // your firebase project creds
+│  └─ src/...
+└─ docker-compose.yml
 
+
+```
+run `npm start` to compile to js.
+```bash
+docker compose up --build
+docker compose down
+```
 ---
 
 ## Standard API Response Formats

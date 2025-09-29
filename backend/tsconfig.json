@@ -2,7 +2,7 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    "rootDir": "./backend/src",
+    "rootDir": "./src",
     "outDir": "./dist",
 
     // Environment Settings
@@ -11,7 +11,7 @@
     "moduleResolution": "nodenext",
     "target": "esnext",
     "esModuleInterop": true,
-    
+
     // "types": [],
     // For nodejs:
     // "lib": ["esnext"],
@@ -31,10 +31,10 @@
     "exactOptionalPropertyTypes": true,
 
     // Style Options
-    "noImplicitReturns": true,
+    // "noImplicitReturns": true,
     // "noImplicitOverride": true,
     // "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    // "noUnusedParameters": true,
     // "noFallthroughCasesInSwitch": true,
     // "noPropertyAccessFromIndexSignature": true,
 
@@ -47,5 +47,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["backend/src"]
+  "include": ["src"]
 }

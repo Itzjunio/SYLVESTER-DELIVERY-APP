@@ -17,12 +17,12 @@ const UserSchema = new Schema<IUser>(
             type: String,
             required: [true, 'Password is required'],
             trim: true,
-            select: false, 
+            select: false,
         },
         role: {
             type: String,
             enum: ['customer', 'vendor', 'rider', 'admin'],
-            required: [true, 'User role is required'],
+            required: [true, 'User role is required'], index: true
         },
         mobile: {
             type: String,
@@ -44,24 +44,25 @@ const UserSchema = new Schema<IUser>(
             type: String,
             select: false
         },
-        
+
         resetExpiry: {
             type: Date,
             select: false
         },
         failedAttempts: {
             type: Number,
-            default: 0 
+            default: 0
         },
         lockUntil: { type: Date },
         isActive: {
             type: Boolean,
             default: true,
-        }
+        },
+        status: {type: String, enum: ["active", "suspended"], index: true}
     },
     {
-        timestamps: true, 
-        strict: 'throw', 
+        timestamps: true,
+        strict: 'throw',
     }
 );
 

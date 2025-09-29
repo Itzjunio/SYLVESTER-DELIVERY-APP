@@ -3,7 +3,7 @@ node_modules/
 dist/
 .env
 *.log
-*.json
+food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json
 # TypeScript
 *.tsbuildinfo
 updates.md
@@ -13,3 +13,4 @@ Thumbs.db
 
 # VSCode
 .vscode/
+.github
