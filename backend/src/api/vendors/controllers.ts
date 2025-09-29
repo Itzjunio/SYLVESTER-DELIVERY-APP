@@ -434,12 +434,3 @@ export const toggleRestaurantAvailability = (
     next(error);
   }
 };
-
-// todo : ...
-export const getRatings = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { restaurantId } = req.params;
-};

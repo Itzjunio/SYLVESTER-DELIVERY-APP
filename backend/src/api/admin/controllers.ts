@@ -4,13 +4,93 @@ import { serializeResponse } from "../../profile";
 import { OrderModel } from "../shared/models";
 import { isValidObjectId } from "../../shared/utils/validators";
 import { riderPerformanceSchema } from "./schema";
+import { RestaurantModel, PayOutModel, DisputeModel } from "../shared/models";
+import { DeviceToken } from "../../shared/notifications/fcmModels";
 
 
-export const adminDashBoard = async (_req: Request, res: Response) => {
-  const userCount = await User.countDocuments();
-  return res.json(
-    serializeResponse("success", { users: userCount }, "Users data")
-  );
+export const adminStats = async (_req: Request, res: Response) => {
+  try {
+    const totalUsers = await User.countDocuments();
+    const [customers, vendors, riders, admins] = await Promise.all([
+      User.countDocuments({ role: "customer" }),
+      User.countDocuments({ role: "vendor" }),
+      User.countDocuments({ role: "rider" }),
+      User.countDocuments({ role: "admin" }),
+    ]);
+    const totalRestaurants = await RestaurantModel.countDocuments();
+
+    const [
+      totalOrders,
+      deliveredOrders,
+      pendingOrders,
+      cancelledOrders,
+    ] = await Promise.all([
+      OrderModel.countDocuments(),
+      OrderModel.countDocuments({ orderStatus: "delivered" }),
+      OrderModel.countDocuments({ orderStatus: "pending" }),
+      OrderModel.countDocuments({ orderStatus: "cancelled" }),
+    ]);
+    const revenueAgg = await OrderModel.aggregate([
+      { $match: { orderStatus: "delivered", paymentStatus: "paid" } },
+      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+    ]);
+    const totalRevenue = revenueAgg[0]?.total || 0;
+
+    const [
+      totalPayouts,
+      processedPayouts,
+      pendingPayouts,
+    ] = await Promise.all([
+      PayOutModel.countDocuments(),
+      PayOutModel.countDocuments({ status: "processed" }),
+      PayOutModel.countDocuments({ status: "pending" }),
+    ]);
+
+    const [openDisputes, resolvedDisputes] = await Promise.all([
+      DisputeModel.countDocuments({ status: "pending" }),
+      DisputeModel.countDocuments({ status: "resolved" }),
+    ]);
+    const activeDevices = await DeviceToken.countDocuments();
+
+    return res.json(
+      serializeResponse(
+        "success",
+        {
+          users: {
+            total: totalUsers,
+            customers,
+            vendors,
+            riders,
+            admins,
+          },
+          restaurants: totalRestaurants,
+          orders: {
+            total: totalOrders,
+            delivered: deliveredOrders,
+            pending: pendingOrders,
+            cancelled: cancelledOrders,
+          },
+          revenue: totalRevenue,
+          payouts: {
+            total: totalPayouts,
+            processed: processedPayouts,
+            pending: pendingPayouts,
+          },
+          disputes: {
+            open: openDisputes,
+            resolved: resolvedDisputes,
+          },
+          devices: activeDevices,
+        },
+        "Admin dashboard statistics fetched successfully"
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json(
+      serializeResponse("error", null, "Failed to fetch admin statistics")
+    );
+  }
 };
 
 export const users = async (_req: Request, res: Response) => {
@@ -20,9 +100,9 @@ export const users = async (_req: Request, res: Response) => {
 
 export const orders = async (_req: Request, res: Response) => {
   const orders = await OrderModel.find({})
-    .populate("customer")
-    .populate("restaurant")
-    .populate("rider");
+  .populate({ path: "customerId", select: "email mobile" })
+  .populate({ path: "restaurantId", select: "name address" })
+  .populate({ path: "riderId", select: "email mobile" });
   return res.json(serializeResponse("success", { orders }, "Orders data"));
 };
 
@@ -81,7 +161,7 @@ export const getRiderPerformanceReport = async (
     }
 
     const riderPerformance = await OrderModel.aggregate([
-      { $match: query },
+      { $match: { ...query, riderId: { $ne: null } } },
       {
         $group: {
           _id: "$riderId",

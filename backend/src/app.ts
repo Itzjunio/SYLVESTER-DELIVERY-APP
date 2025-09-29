@@ -11,6 +11,7 @@ import venderRouter from "./api/vendors/routes";
 import riderRouter from "./api/riders/routes";
 import adminRouter from "./api/admin/routes";
 import userRouter from "./shared/User/UserRoutes";
+import sharedRouter from "./api/shared/routes";
 
 const app: Application = express();
 const server = http.createServer(app);
@@ -34,6 +35,7 @@ app.use("/api/vendor", venderRouter);
 app.use("/api/customer", customerRouter);
 app.use("/api/rider", riderRouter);
 app.use("/admin", adminRouter);
+app.use(sharedRouter)
 
 app.use(errorHandler);
 

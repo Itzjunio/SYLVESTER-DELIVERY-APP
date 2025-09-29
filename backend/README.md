@@ -337,6 +337,35 @@ curl -X GET https://api.example.com/api/customer/orders/scheduled \
 ```
 *200:* Returns scheduled orders array.
 
+### GET `GET /restaurants?cuisine=<str>&minRating=<int>maxDeliveryTime=<int>`
+filter by cuisine, minRating and maxDeliveryTime
+
+**Example cURL**
+```bash
+curl -X GET https://api.example.com/api/restaurants?cuisine=<str>&minRating=<int>maxDeliveryTime=<int> \
+  -H "Authorization: Bearer <access_token>"
+```
+*200:* Filtered orders fetched successfully..
+
+
+### Post `/orders/rating`
+rate order after delivery
+
+```json
+  {
+    "orderId": "64fa2…",
+    "rating": 5,
+    "comment": "Great food and fast delivery!"
+  }
+```
+
+**Example cURL**
+```bash
+curl -X POST https://api.example.com/orders/rating \
+  -H "Authorization: Bearer <access_token>" \
+  -H "Content-Type: application/json" \
+  -d ' {"orderId": "64fa2…", "rating": 5, "comment": "Great food and fast delivery!"}'
+```
 ---
 
 ## 4. Rider Routes
@@ -522,6 +551,11 @@ curl -X PATCH https://api.example.com/api/vendor/availability \
 *204:* . Error: 404 Restaurant id required.
 
 
+
+
+
+
+
 ---
 
 ## 6. Admin Routes
@@ -533,7 +567,7 @@ Require `Authorization: Bearer <access_token>`.
 Get summary of all user data.
 **Example cURL**
 ```bash
-curl -X GET https://api.example.com/api/admin/dashboard \
+curl -X GET https://api.example.com/api/admin/stats \
   -H "Authorization: Bearer <access_token>"
 ```
 *200:* Returns user counts by role.
@@ -582,3 +616,18 @@ curl -X PUT https://api.example.com/api/admin/user/<userId>/deactivate \
   -H "Authorization: Bearer <access_token>"
 ```
 *200:* User deactivated. Error: 404 User not found.
+
+
+
+### Shared Routes
+
+### GET `/restaurants/ratings`
+Fetch a restaurant’s overall rating, total number of ratings, and optional customer comments.
+If the requester is a vendor, the API will use the authenticated vendor’s restaurant automatically.
+Otherwise, provide `restaurantId` as a query parameter.
+
+**Example cURL (Customer/Admin)**
+```bash
+  curl -X GET \"https://api.example.com/restaurants/ratings?restaurantId=64fa2abc123\" \
+```
+  -H \"Authorization: Bearer <access_token>\"

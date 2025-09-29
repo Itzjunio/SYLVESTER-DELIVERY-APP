@@ -9,7 +9,7 @@ import {
   updateItem,
   getItem,
   deleteItem,
-  toggleRestaurantAvailability,
+  toggleRestaurantAvailability
 } from "./controllers";
 
 const venderRouter = Router();

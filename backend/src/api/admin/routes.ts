@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { protect } from "../../shared/middlewares/AuthMiddleware";
 import {
-  adminDashBoard,
+  adminStats,
   users,
   orders,
   orderStatus,
@@ -14,7 +14,7 @@ const adminRouter = Router();
 
 adminRouter.use(protect(["admin"]));
 
-adminRouter.get("/dashboard", adminDashBoard);
+adminRouter.get("/stats", adminStats);
 adminRouter.get("/users", users);
 adminRouter.get("/orders", orders);
 adminRouter.get("/orders/:orderId/status", orderStatus);

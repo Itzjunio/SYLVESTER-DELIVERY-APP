@@ -1,7 +1,7 @@
 import { IRefreshTokenPayload, IUser } from "../../types";
 import rateLimit from "express-rate-limit";
 import jwt, { Secret } from "jsonwebtoken";
-import { AuditLog } from "./schemas";
+import { AuditLog } from "./models";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import dotenv from "dotenv";

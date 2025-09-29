@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { RestaurantModel, OrderModel } from "../shared/models";
-import { placeOrderSchema, getNearbyRestaurantsSchema } from "./schemas";
+import { placeOrderSchema, getNearbyRestaurantsSchema, filterSchema, ratingSchema} from "./schemas";
 import { Types } from "mongoose";
 import { IMenuItem } from "../../types/";
 import { serializeResponse } from "../../profile";
@@ -274,10 +274,103 @@ export const rating = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {};
+) => {
+  const parsed = ratingSchema.safeParse(req.body);
+  if (!parsed.success) {
+    const issues = parsed.error.issues.map((i) => i.message).join(", ");
+    const err = new Error(`Invalid request body: ${issues}`) as any;
+    err.statusCode = 400;
+    return next(err);
+  }
+  const { orderId, rating, comment } = parsed.data;
+  const customerId = (req as any).user?.id;
+  try {
+    const order = await OrderModel.findOne({ _id: orderId, customerId });
+    if (!order) {
+      const err = new Error("Order not found or not owned by user") as any;
+      err.statusCode = 404;
+      return next(err);
+    }
 
-// todo: ...
-export const filter = (req: Request, res: Response, next: NextFunction) => {
-  const { Italian, minRating, maxDeliveryTime } = req.query;
+    if (order.orderStatus !== "delivered") {
+      const err = new Error("You can rate only after the order is delivered") as any;
+      err.statusCode = 400;
+      return next(err);
+    }
 
+    order.rating = rating;
+    if (comment !== undefined) order.comment = comment;
+    await order.save();
+
+    return res.status(200).json({
+      status: "success",
+      message: "Rating submitted successfully",
+      data: { orderId: order._id, rating: order.rating, comment: order.comment },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// fixed: ...
+export const filter = async(req: Request, res: Response, next: NextFunction) => {
+  const parsedBody = filterSchema.safeParse(req.query);
+  if (!parsedBody.success) {
+    const issues = parsedBody.error.issues
+      .map((issue) => issue.message)
+      .join(", ");
+    const err = new Error(`Invalid request body: ${issues}`) as any;
+    err.statusCode = 400;
+    return next(err);
+  }
+  const { cuisine, minRating, maxDeliveryTime } = parsedBody.data;
+
+  try {
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: "restaurants",
+          localField: "restaurantId",
+          foreignField: "_id",
+          as: "restaurant",
+        },
+      },
+      { $unwind: "$restaurant" },
+    ];
+
+    const match: any = {};
+    if (minRating !== undefined) {
+      match.rating = { $gte: minRating };
+    }
+    if (cuisine) {
+      match["restaurant.cuisine"] = cuisine;
+    }
+    pipeline.push({
+      $addFields: {
+        deliveryTimeMinutes: {
+          $cond: [
+            { $and: ["$pickedUpAt", "$deliveredAt"] },
+            { $divide: [{ $subtract: ["$deliveredAt", "$pickedUpAt"] }, 1000 * 60] },
+            null,
+          ],
+        },
+      },
+    });
+
+    if (maxDeliveryTime !== undefined) {
+      match.deliveryTimeMinutes = { $lte: maxDeliveryTime };
+    }
+
+    if (Object.keys(match).length > 0) pipeline.push({ $match: match });
+
+    const orders = await OrderModel.aggregate(pipeline);
+
+    return res.status(200).json({
+      status: "success",
+      message: "Filtered orders fetched successfully.",
+      data: orders,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
