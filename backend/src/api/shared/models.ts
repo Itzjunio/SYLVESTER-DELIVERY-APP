@@ -31,6 +31,7 @@ const RestaurantSchema = new Schema<IRestaurant>(
     cuisine: { type: [String], default: [], index: true},
     address: { type: String, required: true },
     isActive: { type: Boolean, default: true },
+    commissionRate: { type: Number, default: 10 },
   },
   { timestamps: true }
 );

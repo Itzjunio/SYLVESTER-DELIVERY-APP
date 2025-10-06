@@ -4,10 +4,14 @@ import {
   adminStats,
   users,
   orders,
-  orderStatus,
   getRiderPerformanceReport,
   getAllRidersPerformanceReport,
   deactivateUser,
+  resolveDispute,
+  disputes,
+  notify,
+  commission,
+  assignRider,
 } from "./controllers";
 
 const adminRouter = Router();
@@ -17,10 +21,16 @@ adminRouter.use(protect(["admin"]));
 adminRouter.get("/stats", adminStats);
 adminRouter.get("/users", users);
 adminRouter.get("/orders", orders);
-adminRouter.get("/orders/:orderId/status", orderStatus);
 adminRouter.get("/rider/performances", getRiderPerformanceReport);
 adminRouter.get("/riders/performances", getAllRidersPerformanceReport);
+adminRouter.get("/disputes", disputes);
 
-adminRouter.put("/users/:userId/deactivate", deactivateUser);
+adminRouter.post("/notifications", notify);
+
+adminRouter.patch("/users/:userId/deactivate", deactivateUser);
+adminRouter.patch("/orders/:id/assign-rider", assignRider);
+adminRouter.patch("/commission/:restaurantId", commission);
+adminRouter.patch("/disputes/:id/resolve", resolveDispute);
+
 
 export default adminRouter;

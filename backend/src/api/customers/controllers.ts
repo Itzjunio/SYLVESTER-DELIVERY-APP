@@ -197,48 +197,6 @@ export const getOrderHistory = async (
     );
 };
 
-export const getOrderTrackingStatus = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { orderId } = req.params;
-  const customerId = req.user?._id;
-
-  if (!orderId) {
-    const err = new Error("Order ID is required.") as any;
-    err.statusCode = 400;
-    return next(err);
-  }
-  if (!customerId) {
-    const err = new Error("Authentication required.") as any;
-    err.statusCode = 401;
-    return next(err);
-  }
-
-  isValidObjectId(orderId);
-
-  const order = await OrderModel.findOne({
-    _id: orderId,
-    customerId: customerId,
-  });
-  if (!order) {
-    const err = new Error(
-      "Order not found or does not belong to this user."
-    ) as any;
-    err.statusCode = 404;
-    return next(err);
-  }
-  return res
-    .status(200)
-    .json(
-      serializeResponse(
-        "success",
-        { status: order.orderStatus },
-        "Order status fetched successfully."
-      )
-    );
-};
 
 export const getCustomerScheduledOrders = async (
   req: Request,

@@ -2,7 +2,6 @@ import { DeviceToken } from "./fcmModels";
 import { Types } from "mongoose";
 import {
   INotificationPayload,
-  FcmMessage,
   FcmMessageTopic,
 } from "./fcmSchemas";
 import { messaging } from "../config/firebase";
@@ -57,30 +56,54 @@ export const sendPushNotification = async (
   userId: string,
   notification: INotificationPayload,
   data: { [key: string]: string }
-): Promise<void> => {
-  try {
-    const deviceTokenDoc = await DeviceToken.findOne({
-      userId: new Types.ObjectId(userId),
-    });
-    if (!deviceTokenDoc) {
-      console.log(
-        `No device token found for user ID: ${userId}. Notification not sent.`
-      );
-      return;
+): Promise<{ sent: number; removed: number }> => {
+  const chunkArray = <T>(arr: T[], size = 500): T[][] => {
+    const chunks: T[][] = [];
+    for (let i = 0; i < arr.length; i += size)
+      chunks.push(arr.slice(i, i + size));
+    return chunks;
+  };
+  const deviceDocs = await DeviceToken.find({
+    userId: new Types.ObjectId(userId),
+  }).select("token -_id");
+  const tokens = deviceDocs.map((t) => t.token).filter(Boolean);
+  if (!tokens.length) return { sent: 0, removed: 0 };
+
+  let removed = 0;
+  let sent = 0;
+  const chunks = chunkArray(tokens, 500);
+  for (const chunk of chunks) {
+    try {
+      const response = await messaging.sendEachForMulticast({
+        tokens: chunk,
+        notification,
+        data,
+      });
+
+      sent += response.successCount;
+      response.responses.forEach((resp, idx) => {
+        if (!resp.success) {
+          const errCode = (resp.error as any)?.code;
+          if (
+            errCode === "messaging/registration-token-not-registered" ||
+            errCode === "messaging/invalid-registration-token"
+          ) {
+            const tokenToRemove = chunk[idx];
+            if (tokenToRemove) {
+              DeviceToken.deleteOne({ token: tokenToRemove }).catch(() => {});
+              removed++;
+            }
+          } else {
+            console.warn("FCM send error for token:", chunk[idx], resp.error);
+          }
+        }
+      });
+    } catch (err) {
+      console.error("sendMulticast failed:", err);
     }
-
-    const message: FcmMessage = {
-      token: deviceTokenDoc.token,
-      notification,
-      data,
-    };
-
-    const response = await messaging.send(message);
-    console.log("Successfully sent message:", response);
-  } catch (error) {
-    console.error("Error sending message:", error);
-    throw error;
   }
+
+  return { sent, removed };
 };
 
 export const sendToTopic = async (

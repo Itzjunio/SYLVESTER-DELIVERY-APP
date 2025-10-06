@@ -20,7 +20,7 @@ venderRouter.get("/menu/items/itemId", getItem);
 venderRouter.post("/menu/items", addItems);
 venderRouter.patch("/menu/items/:itemId", updateItem);
 venderRouter.delete("/menu/items/:itemId", deleteItem);
-venderRouter.delete("/orders/:orderId/status", orderStatus);
+venderRouter.patch("/orders/:orderId/status", orderStatus);
 venderRouter.put("/orders/:orderId/actions/reject", rejectOrder);
 venderRouter.patch(
   "/menu/items/:itemId/availability",

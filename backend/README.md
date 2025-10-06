@@ -319,14 +319,6 @@ curl -X POST https://api.example.com/api/customer/order \
 ```
 *201:* Returns new order. Errors: 400 Invalid body, 404 Restaurant not found.
 
-### GET `/orders/:orderId/status`
-Track order status.
-**Example cURL**
-```bash
-curl -X GET https://api.example.com/api/customer/orders/<orderId>/status \
-  -H "Authorization: Bearer <access_token>"
-```
-*200:* Returns order status. Errors: 400 Invalid ID, 404 Not found.
 
 ### GET `/orders/scheduled`
 Retrieve all scheduled orders.
@@ -391,7 +383,7 @@ curl -X GET https://api.example.com/api/rider/order/<orderId> \
 ```
 *200:* Returns full order. Errors: 400 Invalid ID, 404 Not found/unauthorized.
 
-### PUT `/order/:orderId/status`
+### PATCH `/order/:orderId/status`
 Update order status.
 ```json
 {
@@ -400,7 +392,7 @@ Update order status.
 ```
 **Example cURL**
 ```bash
-curl -X PUT https://api.example.com/api/rider/order/<orderId>/status \
+curl -X PATCH https://api.example.com/api/rider/order/<orderId>/status \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{"status":"in-transit"}'
@@ -453,7 +445,7 @@ curl -X POST https://api.example.com/api/vendor/menu/items \
 ```
 *201:* Returns new menu item. Error: 400 Invalid body.
 
-### PUT `/orders/:orderId/status`
+### PATCH `/orders/:orderId/status`
 Update order status.
 ```json
 {
@@ -462,7 +454,7 @@ Update order status.
 ```
 **Example cURL**
 ```bash
-curl -X PUT https://api.example.com/api/vendor/orders/<orderId>/status \
+curl -X PATCH https://api.example.com/api/vendor/orders/<orderId>/status \
   -H "Authorization: Bearer <access_token>" \
   -H "Content-Type: application/json" \
   -d '{"status":"accepted"}'
@@ -608,18 +600,183 @@ curl -X GET "https://api.example.com/api/admin/rider/performance?startDate=2025-
 ```
 *200:* Performance report or "No data". Error: 400 Invalid query.
 
-### PUT `/user/:userId/deactivate`
+### PATCH `/user/:userId/deactivate`
 Deactivate a user.
 **Example cURL**
 ```bash
-curl -X PUT https://api.example.com/api/admin/user/<userId>/deactivate \
+curl -X PATCH https://api.example.com/api/admin/user/<userId>/deactivate \
   -H "Authorization: Bearer <access_token>"
 ```
 *200:* User deactivated. Error: 404 User not found.
 
 
 
-### Shared Routes
+### POST `/admin/notifications`
+Send push notifications to a topic (e.g. role) or specific users.
+
+---
+
+#### Option 1: Send to Topic
+Broadcast to all users subscribed to a topic (e.g. `rider` or `vendor`).
+
+```json
+{
+  "topic": "rider",
+  "title": "Delivery Reminder",
+  "message": "Please confirm your deliveries for today!"
+}
+```
+```bash
+curl -X POST https://api.example.com/admin/notifications \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "topic": "rider",
+    "title": "Delivery Reminder",
+    "message": "Please confirm your deliveries for today!"
+  }
+```
+
+#### Option 2: Send to Specific Users
+
+Send to one or multiple users (will reach all their registered devices).
+
+```json
+{
+  "userIds": ["64fa2abc...", "64fa2def..."],
+  "title": "Account Update",
+  "message": "Your payout for the week has been processed!"
+}
+```
+
+```bash
+curl -X POST https://api.example.com/admin/notifications \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userIds": ["64fa2abc...", "64fa2def..."],
+    "title": "Account Update",
+    "message": "Your payout for the week has been processed!"
+  }'
+
+```
+
+```json
+{
+  "status": "error",
+  "message": "Provide only one: either 'topic' or 'userIds'."
+}
+```
+
+### PATCH `/admin/commission/:restaurantId`
+Update a restaurant’s commission rate.
+```json
+{
+  "commissionRate": 12.5
+}
+```
+
+**Example cURL**
+
+```bash
+curl -X PATCH https://api.example.com/admin/commission/64fa2abc123 \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"commissionRate": 12.5}'
+```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "message": "Commission updated successfully.",
+  "data": {
+    "restaurantId": "64fa2abc123",
+    "commissionRate": 12.5
+  }
+}
+```
+* Restaurant must exist or a `404` will be returned.
+
+---
+
+### GET `/admin/disputes?status=pending`
+
+Fetch all customer, rider, or vendor disputes.
+
+Admins can optionally filter by dispute status: `pending` or `resolved`.
+
+
+**Example cURL**
+
+```bash
+curl -X GET "https://api.example.com/admin/disputes?status=pending" \
+  -H "Authorization: Bearer <admin_token>"
+```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "message": "Disputes retrieved successfully.",
+  "data": {
+    "disputes": [
+      {
+        "_id": "64fa2d45...",
+        "issue": "Order was delayed by 2 hours",
+        "status": "pending",
+        "createdAt": "2025-10-05T14:22:11.123Z"
+      }
+    ]
+  }
+}
+```
+
+**Notes**
+
+* If no `status` query is provided, all disputes are returned.
+---
+
+### PATCH `/admin/disputes/:id/resolve`
+
+Mark a dispute as resolved and record admin notes.
+
+```json
+{
+  "resolutionNotes": "Refund issued to the customer."
+}
+```
+
+**Example cURL**
+
+```bash
+curl -X PATCH https://api.example.com/admin/disputes/64fa2d45/resolve \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"resolutionNotes": "Refund issued to the customer."}'
+```
+
+**Response**
+
+```json
+{
+  "status": "success",
+  "message": "Dispute resolved successfully.",
+  "data": {
+    "_id": "64fa2d45...",
+    "status": "resolved",
+    "resolutionNotes": "Refund issued to the customer.",
+    "resolvedAt": "2025-10-06T09:33:21.000Z"
+  }
+}
+```
+* Returns `404` if dispute not found.
+
+
+
+## 7. Shared Routes
 
 ### GET `/restaurants/ratings`
 Fetch a restaurant’s overall rating, total number of ratings, and optional customer comments.
@@ -631,3 +788,13 @@ Otherwise, provide `restaurantId` as a query parameter.
   curl -X GET \"https://api.example.com/restaurants/ratings?restaurantId=64fa2abc123\" \
 ```
   -H \"Authorization: Bearer <access_token>\"
+
+
+### GET `/orders/:orderId/status`
+Track order status.
+**Example cURL**
+```bash
+curl -X GET https://api.example.com/api/orders/<orderId>/status \
+  -H "Authorization: Bearer <access_token>"
+```
+*200:* Returns order status. Errors: 400 Invalid ID, 404 Not found.

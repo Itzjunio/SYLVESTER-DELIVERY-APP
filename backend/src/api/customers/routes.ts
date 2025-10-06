@@ -4,7 +4,6 @@ import {
   getRestaurantMenu,
   placeOrder,
   getOrderHistory,
-  getOrderTrackingStatus,
   getCustomerScheduledOrders,
   rating,
   filter
@@ -28,7 +27,6 @@ customerRouter.get(
 customerRouter.get("/orders/history", getOrderHistory);
 customerRouter.post("/orders", placeOrder);
 customerRouter.get("/orders/scheduled", getCustomerScheduledOrders);
-customerRouter.get("/orders/:orderId/status", getOrderTrackingStatus);
 customerRouter.post("/orders/rating", rating);
 customerRouter.post("/restaurants", filter);
 

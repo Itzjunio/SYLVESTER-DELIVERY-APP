@@ -14,6 +14,6 @@ riderRouter.use(protect(["rider"]));
 riderRouter.get("/me", riderDashBoard);
 riderRouter.get("/orders/:orderId", viewOrderDetails);
 riderRouter.put("/orders/:orderId/assign", acceptOrderAssignment);
-riderRouter.put("/orders/:orderId/status", markStatus);
+riderRouter.patch("/orders/:orderId/status", markStatus);
 
 export default riderRouter;

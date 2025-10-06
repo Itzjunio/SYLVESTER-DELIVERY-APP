@@ -23,11 +23,11 @@ interface INotificationPayload {
   imgUrl?: string;
 }
 
-interface FcmMessage {
-  notification: INotificationPayload;
-  token: string;
-  data?: { [key: string]: string };
-}
+// interface FcmMessage {
+//   notification: INotificationPayload;
+//   token: string;
+//   data?: { [key: string]: string };
+// }
 
 interface FcmMessageTopic {
   topic: string;
@@ -35,4 +35,4 @@ interface FcmMessageTopic {
   data?: { [key: string]: string };
 }
 
-export type { INotificationPayload, FcmMessage, FcmMessageTopic, IDeviceToken };
+export type { INotificationPayload, FcmMessageTopic, IDeviceToken };

@@ -75,6 +75,7 @@ interface IRestaurant extends Document {
   cuisine: string[];
   address: string;
   isActive: boolean;
+  commissionRate: number;
 }
 
 interface IDisputes {

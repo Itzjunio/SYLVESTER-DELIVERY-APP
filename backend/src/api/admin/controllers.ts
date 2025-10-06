@@ -6,7 +6,10 @@ import { isValidObjectId } from "../../shared/utils/validators";
 import { riderPerformanceSchema } from "./schema";
 import { RestaurantModel, PayOutModel, DisputeModel } from "../shared/models";
 import { DeviceToken } from "../../shared/notifications/fcmModels";
-
+import {
+  sendPushNotification,
+  sendToTopic,
+} from "../../shared/notifications/fcmService";
 
 export const adminStats = async (_req: Request, res: Response) => {
   try {
@@ -19,28 +22,20 @@ export const adminStats = async (_req: Request, res: Response) => {
     ]);
     const totalRestaurants = await RestaurantModel.countDocuments();
 
-    const [
-      totalOrders,
-      deliveredOrders,
-      pendingOrders,
-      cancelledOrders,
-    ] = await Promise.all([
-      OrderModel.countDocuments(),
-      OrderModel.countDocuments({ orderStatus: "delivered" }),
-      OrderModel.countDocuments({ orderStatus: "pending" }),
-      OrderModel.countDocuments({ orderStatus: "cancelled" }),
-    ]);
+    const [totalOrders, deliveredOrders, pendingOrders, cancelledOrders] =
+      await Promise.all([
+        OrderModel.countDocuments(),
+        OrderModel.countDocuments({ orderStatus: "delivered" }),
+        OrderModel.countDocuments({ orderStatus: "pending" }),
+        OrderModel.countDocuments({ orderStatus: "cancelled" }),
+      ]);
     const revenueAgg = await OrderModel.aggregate([
       { $match: { orderStatus: "delivered", paymentStatus: "paid" } },
       { $group: { _id: null, total: { $sum: "$totalAmount" } } },
     ]);
     const totalRevenue = revenueAgg[0]?.total || 0;
 
-    const [
-      totalPayouts,
-      processedPayouts,
-      pendingPayouts,
-    ] = await Promise.all([
+    const [totalPayouts, processedPayouts, pendingPayouts] = await Promise.all([
       PayOutModel.countDocuments(),
       PayOutModel.countDocuments({ status: "processed" }),
       PayOutModel.countDocuments({ status: "pending" }),
@@ -87,9 +82,11 @@ export const adminStats = async (_req: Request, res: Response) => {
     );
   } catch (err) {
     console.error(err);
-    return res.status(500).json(
-      serializeResponse("error", null, "Failed to fetch admin statistics")
-    );
+    return res
+      .status(500)
+      .json(
+        serializeResponse("error", null, "Failed to fetch admin statistics")
+      );
   }
 };
 
@@ -100,29 +97,10 @@ export const users = async (_req: Request, res: Response) => {
 
 export const orders = async (_req: Request, res: Response) => {
   const orders = await OrderModel.find({})
-  .populate({ path: "customerId", select: "email mobile" })
-  .populate({ path: "restaurantId", select: "name address" })
-  .populate({ path: "riderId", select: "email mobile" });
+    .populate({ path: "customerId", select: "email mobile" })
+    .populate({ path: "restaurantId", select: "name address" })
+    .populate({ path: "riderId", select: "email mobile" });
   return res.json(serializeResponse("success", { orders }, "Orders data"));
-};
-
-export const orderStatus = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { orderId } = req.params;
-
-  if (orderId) {
-    isValidObjectId(orderId);
-  }
-  const order = await OrderModel.findById(orderId);
-  if (!order) {
-    const err = new Error("Order not found") as any;
-    err.statusCode = 404;
-    return next(err);
-  }
-  return res.json(serializeResponse("success", { order }, "Order data"));
 };
 
 export const getRiderPerformanceReport = async (
@@ -350,3 +328,225 @@ export const getAllRidersPerformanceReport = async (
     next(error);
   }
 };
+
+export const assignRider = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  const adminId = req.user?._id;
+  const { riderId } = req.body;
+
+  if (!adminId) {
+    const err = new Error("Authentication required.") as any;
+    err.statusCode = 401;
+    return next(err);
+  }
+
+  if (!id || !riderId) {
+    const err = new Error("order Id or rider Id required.") as any;
+    err.statusCode = 400;
+    return next(err);
+  }
+  isValidObjectId(id);
+  isValidObjectId(riderId);
+  try {
+    const order = await OrderModel.findById(id);
+    if (!order) {
+      const err = new Error("Order not found.") as any;
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    order.riderId = riderId;
+    order.assignedBy = adminId;
+    order.orderStatus = "accepted";
+    await order.save();
+
+    return res
+      .status(200)
+      .json(
+        serializeResponse("success", { order }, "Rider assigned successfully.")
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const commission = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { restaurantId } = req.params;
+  const { commissionRate } = req.body;
+
+  try {
+    if (!restaurantId) {
+      const err = new Error("Restaurant ID required.") as any;
+      err.statusCode = 400;
+      return next(err);
+    }
+    if (
+      typeof commissionRate !== "number" ||
+      commissionRate < 0 ||
+      commissionRate > 100
+    ) {
+      const err = new Error(
+        "Commission rate must be a number between 0-100."
+      ) as any;
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const restaurant = await RestaurantModel.findByIdAndUpdate(
+      restaurantId,
+      { commissionRate },
+      { new: true }
+    );
+
+    if (!restaurant) {
+      const err = new Error("Restaurant not found.") as any;
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    return res.json(
+      serializeResponse(
+        "success",
+        { restaurant },
+        "Commission updated successfully."
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const notify = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { title, message, topic, userIds } = req.body;
+
+  try {
+    if (!title || !message) {
+      const err = new Error("Title and message are required.") as any;
+      err.statusCode = 400;
+      return next(err);
+    }
+    if (topic && userIds) {
+      const err = new Error(
+        "Provide only one: either 'topic' or 'userIds'."
+      ) as any;
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    if (topic) {
+      await sendToTopic(topic, { title, body: message }, {});
+      return res.json(
+        serializeResponse(
+          "success",
+          { topic },
+          `Notification sent to topic: ${topic}`
+        )
+      );
+    }
+    if (Array.isArray(userIds) && userIds.length > 0) {
+      const results = await Promise.allSettled(
+        userIds.map((id) =>
+          sendPushNotification(id, { title, body: message }, {})
+        )
+      );
+
+      let totalSent = 0;
+      let totalRemoved = 0;
+
+      results.forEach((r) => {
+        if (r.status === "fulfilled") {
+          totalSent += r.value.sent;
+          totalRemoved += r.value.removed;
+        }
+      });
+
+      return res.json(
+        serializeResponse(
+          "success",
+          { totalSent, totalRemoved, userCount: userIds.length },
+          "Notifications sent successfully."
+        )
+      );
+    }
+
+    const err = new Error("Please provide either 'topic' or 'userIds'.") as any;
+    err.statusCode = 400;
+    return next(err);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const disputes = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { status } = req.query;
+  try {
+    const filter: any = {};
+    if (status) filter.status = status;
+
+    const disputes = await DisputeModel.find(filter);
+    return res.json(
+      serializeResponse(
+        "success",
+        { disputes },
+        "Disputes fetched successfully."
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resolveDispute = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id } = req.params;
+  const { resolutionNotes } = req.body;
+
+  try {
+    if (!id) {
+      const err = new Error("dispute ID.") as any;
+      err.statusCode = 400;
+      return next(err);
+    }
+
+    const dispute = await DisputeModel.findById(id);
+    if (!dispute) {
+      const err = new Error("Dispute not found.") as any;
+      err.statusCode = 404;
+      return next(err);
+    }
+
+    dispute.status = "resolved";
+    dispute.resolutionNotes = resolutionNotes || "Resolved by admin";
+    await dispute.save();
+
+    return res.json(
+      serializeResponse(
+        "success",
+        { dispute },
+        "Dispute resolved successfully."
+      )
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+
