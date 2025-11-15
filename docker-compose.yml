@@ -1,0 +1,26 @@
+
+services:
+  backend:
+    build: ./backend
+    container_name: sylvester-dev
+    ports:
+      - "3000:3000"
+    env_file: .env
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/food-delivery-app
+    volumes:
+      - ./food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json:/usr/src/app/food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json:ro
+
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

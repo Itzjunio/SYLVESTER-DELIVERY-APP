@@ -3,14 +3,18 @@ node_modules/
 dist/
 .env
 *.log
-*.json
+food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json
+
 # TypeScript
 *.tsbuildinfo
 
+# Project
 updates.md
+
 # OS
 .DS_Store
 Thumbs.db
 
 # VSCode
 .vscode/
+.github
