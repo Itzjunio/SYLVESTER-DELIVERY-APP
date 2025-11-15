@@ -1,0 +1,15 @@
+# .dockerignore for Flutter customer app
+.git
+.gitignore
+.vscode
+.idea
+README.md
+.env
+*.log
+build/
+.dart_tool/
+.pub-cache/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata

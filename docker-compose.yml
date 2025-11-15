@@ -1,26 +1,45 @@
+version: '3.8'
 
 services:
   backend:
-    build: ./backend
-    container_name: sylvester-dev
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sylvester-backend
     ports:
       - "3000:3000"
     env_file: .env
     environment:
       MONGODB_URI: mongodb://mongo:27017/food-delivery-app
+      NODE_ENV: development
     volumes:
       - ./food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json:/usr/src/app/food-delivery-485f7-firebase-adminsdk-fbsvc-9251cfded5.json:ro
-
     depends_on:
-      - mongo
+      mongo:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
 
   mongo:
-    image: mongo:6
+    image: mongo:6-alpine
+    container_name: sylvester-mongo
     restart: always
     ports:
       - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: food-delivery-app
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   restaurant:
     build:
@@ -30,6 +49,12 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   rider:
     build:
@@ -39,6 +64,12 @@ services:
     ports:
       - "8081:80"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   customer:
     build:
@@ -48,6 +79,18 @@ services:
     ports:
       - "8082:80"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
 volumes:
   mongo_data:
+    driver: local
+
+networks:
+  default:
+    name: sylvester-network
+    driver: bridge
