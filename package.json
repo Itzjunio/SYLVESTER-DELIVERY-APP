@@ -1,0 +1,14 @@
+{
+  "name": "sylvester-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "start:backend": "cd backend && npm start",
+    "build:backend": "cd backend && npm run build",
+    "dev:client": "cd client && flutter run -d chrome",
+    "build:client": "cd client && flutter build apk",
+    "analyze:client": "cd client && flutter analyze",
+    "doctor": "flutter doctor"
+  }
+}
