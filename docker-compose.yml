@@ -22,5 +22,32 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  restaurant:
+    build:
+      context: ./client/restaurant
+      dockerfile: Dockerfile
+    container_name: sylvester-restaurant
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  rider:
+    build:
+      context: ./client/rider
+      dockerfile: Dockerfile
+    container_name: sylvester-rider
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+
+  customer:
+    build:
+      context: ./client/customer
+      dockerfile: Dockerfile
+    container_name: sylvester-customer
+    ports:
+      - "8082:80"
+    restart: unless-stopped
+
 volumes:
   mongo_data:
