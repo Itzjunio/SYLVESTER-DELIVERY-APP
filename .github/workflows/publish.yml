@@ -1,0 +1,8 @@
+name: food delivery app
+
+on:
+  push:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
