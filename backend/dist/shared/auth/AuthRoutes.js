@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const AuthController_1 = require("./AuthController");
+const fcmControllers_1 = require("../notifications/fcmControllers");
+const utils_1 = require("../utils/utils");
+const AuthMiddleware_1 = require("../middlewares/AuthMiddleware");
+const express_1 = require("express");
+const authRouter = (0, express_1.Router)();
+authRouter.post("/register", AuthController_1.register);
+authRouter.post("/login", AuthController_1.login);
+authRouter.post("/verification/resend", AuthController_1.resendVerificationCode);
+authRouter.post("/auth/verification", AuthController_1.verifyUserAccount);
+authRouter.use((0, AuthMiddleware_1.protect)());
+authRouter.post("/refresh-token", AuthController_1.refreshToken);
+authRouter.post("/forgot-password", utils_1.forgotPasswordLimiter, AuthController_1.forgotPassword);
+authRouter.put("/reset-password", AuthController_1.resetPassword);
+authRouter.put("/device-token", fcmControllers_1.registerDeviceToken);
+authRouter.delete("/logout", AuthController_1.logout);
+exports.default = authRouter;
+//# sourceMappingURL=AuthRoutes.js.map

@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const AuthMiddleware_1 = require("../../shared/middlewares/AuthMiddleware");
+const controllers_1 = require("./controllers");
+const adminRouter = (0, express_1.Router)();
+adminRouter.use((0, AuthMiddleware_1.protect)(["admin"]));
+adminRouter.get("/stats", controllers_1.adminStats);
+adminRouter.get("/users", controllers_1.users);
+adminRouter.get("/orders", controllers_1.orders);
+adminRouter.get("/rider/performances", controllers_1.getRiderPerformanceReport);
+adminRouter.get("/riders/performances", controllers_1.getAllRidersPerformanceReport);
+adminRouter.get("/disputes", controllers_1.disputes);
+adminRouter.post("/notifications", controllers_1.notify);
+adminRouter.patch("/users/:userId/deactivate", controllers_1.deactivateUser);
+adminRouter.patch("/orders/:id/assign-rider", controllers_1.assignRider);
+adminRouter.patch("/commission/:restaurantId", controllers_1.commission);
+adminRouter.patch("/disputes/:id/resolve", controllers_1.resolveDispute);
+exports.default = adminRouter;
+//# sourceMappingURL=routes.js.map
