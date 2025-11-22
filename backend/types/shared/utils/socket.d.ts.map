@@ -1,0 +1,1 @@
+{"version":3,"file":"socket.d.ts","sourceRoot":"","sources":["../../../src/shared/utils/socket.ts"],"names":[],"mappings":"AAAA,OAAO,EAAU,MAAM,IAAI,cAAc,EAAE,MAAM,WAAW,CAAC;AAC7D,OAAO,EAAE,MAAM,IAAI,UAAU,EAAE,MAAM,MAAM,CAAC;AAI5C,eAAO,MAAM,sBAAsB,GAAI,QAAQ,UAAU,KAAG,IAoC3D,CAAC;AAEF,eAAO,MAAM,uBAAuB,QAAO,cAG1C,CAAC"}
