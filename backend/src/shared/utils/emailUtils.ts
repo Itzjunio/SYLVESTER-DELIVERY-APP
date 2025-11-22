@@ -30,7 +30,7 @@ const transport = nodemailer.createTransport({
 
 export async function sendMail(to: string, subject: string, html: string) {
   return transport.sendMail({
-    from: `"App" <${emailSecrets.emailUser}>`,
+    from: `"Kwik" <${emailSecrets.emailUser}>`,
     to,
     subject,
     html,
