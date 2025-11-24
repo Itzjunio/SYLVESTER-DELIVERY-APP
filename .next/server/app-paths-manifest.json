@@ -1,8 +1,0 @@
-{
-  "/profile/page": "app/profile/page.js",
-  "/orders/page": "app/orders/page.js",
-  "/settings/page": "app/settings/page.js",
-  "/reports/page": "app/reports/page.js",
-  "/page": "app/page.js",
-  "/users/riders/page": "app/users/riders/page.js"
-}

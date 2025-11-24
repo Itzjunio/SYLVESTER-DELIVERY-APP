@@ -1,0 +1,7 @@
+{
+  "/payments/page": "app/payments/page.js",
+  "/reports/page": "app/reports/page.js",
+  "/notifications/page": "app/notifications/page.js",
+  "/settings/page": "app/settings/page.js",
+  "/profile/page": "app/profile/page.js"
+}
