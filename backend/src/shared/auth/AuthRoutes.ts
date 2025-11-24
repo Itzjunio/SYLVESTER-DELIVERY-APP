@@ -15,8 +15,8 @@ import { Router } from "express";
 
 const authRouter = Router();
 
-authRouter.post("/register", register);
 authRouter.post("/login", login);
+authRouter.post("/register", register);
 authRouter.post("/verification/resend", resendVerificationCode);
 authRouter.post("/auth/verification", verifyUserAccount);
 

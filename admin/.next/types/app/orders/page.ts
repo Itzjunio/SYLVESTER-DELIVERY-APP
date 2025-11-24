@@ -1,4 +1,4 @@
-// File: C:\Users\Treasure Mani\SYLVESTER-DELIVERY-APP\app\orders\page.tsx
+// File: C:\Users\Treasure Mani\SYLVESTER-DELIVERY-APP\admin\app\orders\page.tsx
 import * as entry from '../../../../app/orders/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

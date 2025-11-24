@@ -36,7 +36,7 @@ migrate_working_dir/
 # Symbolication related
 app.*.symbols
 # Node
-node_modules/
+**/node_modules/
 dist/
 .env
 *.log

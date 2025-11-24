@@ -13,4 +13,3 @@ cd customer
 flutter pub get
 ```
 
-Then adapt UI/screens from the restaurant app as needed.

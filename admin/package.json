@@ -1,6 +1,7 @@
 {
   "name": "food-admin-advanced",
   "version": "1.0.0",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
@@ -10,20 +11,26 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@eslint/config-array": "^0.23.0",
+    "@eslint/object-schema": "^3.0.0",
     "axios": "^1.13.2",
     "clsx": "^1.2.1",
     "framer-motion": "^10.12.16",
+    "glob": "^13.0.0",
+    "lru-cache": "^11.2.2",
     "lucide-react": "^0.270.0",
     "next": "^14.2.33",
     "next-auth": "^4.24.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
-    "recharts": "^2.6.2"
+    "recharts": "^2.6.2",
+    "rimraf": "^6.1.2"
   },
   "devDependencies": {
     "@types/node": "24.6.2",
-    "@types/react": "19.2.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.14",
     "eslint": "8.41.0",
     "eslint-config-next": "14.0.0",

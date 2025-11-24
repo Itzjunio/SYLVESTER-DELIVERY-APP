@@ -107,10 +107,10 @@ lib/
    ```bash
    # For web
    flutter run -d web-server --web-port 8080
-   
+
    # For mobile
    flutter run
-   
+
    # For desktop
    flutter run -d windows  # or macos/linux
    ```
@@ -177,22 +177,8 @@ lib/
 - Image caching and optimization
 - Efficient state management
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Support
-
-For support and questions, please open an issue in the repository or contact the development team.
-
----
-
-**Note**: This app was converted from a Bootstrap web application to provide a native mobile and web experience using Flutter. All original functionality has been preserved and enhanced with modern mobile app features.

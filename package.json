@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev:backend": "cd backend && npm run dev",
+    "dev:admin": "cd admin && npm run dev",
     "start:backend": "cd backend && npm start",
     "build:backend": "cd backend && npm run build",
     "dev:client": "cd client && flutter run -d chrome",
