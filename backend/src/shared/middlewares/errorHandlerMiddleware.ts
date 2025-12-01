@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { serializeResponse } from "../../profile";
+
 
 interface CustomError extends Error {
   statusCode?: number;
@@ -14,11 +16,12 @@ const errorHandler = (
   console.error(err.stack);
   const statusCode = err.statusCode || 500;
   const message = err.message || "An unexpected error occurred.";
-  res.status(statusCode).json({
-    success: false,
-    message: message,
-    data: err.data,
-  });
+  res.status(statusCode).json(
+    serializeResponse(
+      "error",
+      err.data || null,
+      message
+    ));
 };
 
 export default errorHandler;

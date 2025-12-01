@@ -11,3 +11,23 @@ body { @apply bg-gray-50 text-slate-900 antialiased; font-family: Inter, ui-sans
 .btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium; }
 .btn-primary { @apply bg-[var(--primary)] text-white hover:bg-blue-700; }
 .dark body { background: #0b1220; color: #e6eef8; }
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spinSlow 2.2s linear infinite;
+}
+

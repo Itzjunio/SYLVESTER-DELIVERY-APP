@@ -1,8 +1,8 @@
 // File: C:\Users\Treasure Mani\SYLVESTER-DELIVERY-APP\admin\app\page.tsx
-import * as entry from '../../../app/page.js'
+import * as entry from '../../../app/(protected)/page.jsx'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
-type TEntry = typeof import('../../../app/page.js')
+type TEntry = typeof import('../../../app/(protected)/page.jsx')
 
 // Check that the entry is a valid entry
 checkFields<Diff<{
@@ -16,12 +16,12 @@ checkFields<Diff<{
   preferredRegion?: 'auto' | 'global' | 'home' | string | string[]
   runtime?: 'nodejs' | 'experimental-edge' | 'edge'
   maxDuration?: number
-  
+
   metadata?: any
   generateMetadata?: Function
   viewport?: any
   generateViewport?: Function
-  
+
 }, TEntry, ''>>()
 
 // Check the prop type of the entry function
