@@ -3,6 +3,8 @@ import { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '@/context/authContext';
 import http from '@/lib/http';
+import toast from 'react-hot-toast';
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +12,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
+
+
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,21 +22,21 @@ export default function LoginPage() {
     setError('');
 
     try {
-
       const res = await http.post('/auth/login', {
         email,
         password,
         role: 'admin',
       });
 
-      // todo : toast notification on secess
-
       const token = res.data.accessToken;
+
       login(token);
       router.push('/');
+      toast.success("Login Successful! ")
     } catch (err: any) {
-      console.error(err);
+      if (err.response) { toast.error(err.response.data.message || "Login failed"); }
       setError(err.response?.data?.message || 'Login failed');
+
     } finally {
       setLoading(false);
     }

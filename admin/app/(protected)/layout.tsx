@@ -5,6 +5,7 @@ import ProtectedPage from "@/lib/ProtectedPage";
 import Sidebar from "@/components/Sidebar";
 import Navbar from "@/components/Navbar";
 
+
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -24,3 +25,5 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     </html>
   );
 }
+
+

@@ -141,6 +141,7 @@ export const refreshToken = async (
   next: NextFunction
 ) => {
   const refreshTokenCookie = req.cookies.refreshToken;
+
   if (!refreshTokenCookie) {
     const err = new Error("Refresh token not found.") as any;
     err.statusCode = 401;
@@ -194,8 +195,8 @@ export const logout = async(req: Request, res: Response, next: NextFunction) => 
   await unSubscribeToTopic(token.toString(), role);
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: false,
+    sameSite: "lax",
   });
   return res.status(204).end();
 };

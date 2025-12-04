@@ -1,21 +1,25 @@
 'use client';
 import ThemeToggle from './ThemeToggle';
 import { Bell, ChevronDown, User, Settings, LogOut } from 'lucide-react';
-import { useState } from 'react';
-import { signOut } from 'next-auth/react';
+import { useContext, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from '@/context/authContext';
+
+
+
 
 export default function Navbar() {
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [notificationCount, setNotificationCount] = useState(3); // Example: initial notification count
+    const [notificationCount, setNotificationCount] = useState(3);
     const router = useRouter();
-    // In a real application, you would fetch notifications here
-
+    const { logout } = useContext(AuthContext);
 
 
       const handleClick = () => {
         router.push('/notifications');
-      };
+    };
+
+
 
     return (
         <header className="flex items-center justify-between bg-white p-4 border-b">
@@ -25,7 +29,7 @@ export default function Navbar() {
             <div className="flex items-center gap-4">
                 <div className="relative  hover:cursor-pointer" onClick={handleClick}>
                     <Bell size={20} className="text-gray-600" />
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">{notificationCount}</span>
                 </div>
                 <div className="relative">
                     <button
@@ -46,7 +50,7 @@ export default function Navbar() {
                             <a href="/settings" className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100">
                                 <Settings size={16} /> Settings
                             </a>
-                            <button onClick={() => signOut()} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 w-full text-left">
+                            <button onClick={()=>logout()} className="flex items-center gap-2 px-4 py-2 text-red-600 hover:bg-gray-100 w-full text-left">
                                 <LogOut size={16} /> Logout
                             </button>
                         </div>

@@ -1,16 +1,8 @@
 'use client';
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
-
 import { setAuthToken } from '@/lib/authToken';
-
-interface AuthContextProps {
-  accessToken: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (token: string) => void;
-  logout: () => void;
-}
+import toast from 'react-hot-toast';
 
 export const AuthContext = createContext<AuthContextProps>({
   accessToken: null,
@@ -34,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const refreshAccessToken = async () => {
       try {
         const { data } = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );
@@ -56,10 +48,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
 
   const logout = async () => {
+    const headers = accessToken
+        ? { Authorization: `Bearer ${accessToken}` }
+        : {};
     try {
-      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {}, { withCredentials: true });
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {}, { withCredentials: true, headers: headers });
+      toast.success("Logged out Successfully")
     } catch (err) {
-      console.error('Logout failed', err);
+      if (err.response) {
+        toast.error("Failed to logout. Try again", err.response.data.message)
+      }
     } finally {
       setAccessToken(null);
     }

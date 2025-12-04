@@ -19,13 +19,13 @@ authRouter.post("/login", login);
 authRouter.post("/register", register);
 authRouter.post("/verification/resend", resendVerificationCode);
 authRouter.post("/auth/verification", verifyUserAccount);
+authRouter.post("/refresh-token", refreshToken);
 
 authRouter.use(protect());
 
-authRouter.post("/refresh-token", refreshToken);
 authRouter.post("/forgot-password", forgotPasswordLimiter, forgotPassword);
 authRouter.put("/reset-password", resetPassword);
 authRouter.put("/device-token", registerDeviceToken);
-authRouter.delete("/logout", logout);
+authRouter.post("/logout", logout);
 
 export default authRouter;
