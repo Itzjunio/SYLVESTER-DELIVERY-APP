@@ -43,7 +43,7 @@ class DashboardScreen extends StatelessWidget {
             // Restaurant Profile Card
             const RestaurantProfileCard(),
             const SizedBox(height: 20),
-            
+
             // Today's Overview Section
             const Text(
               "Today's Overview",
@@ -54,10 +54,10 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            
+
             // Stats Cards
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   child: StatsCard(
                     title: "Today's Orders",
@@ -84,7 +84,7 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 30),
-            
+
             // Live Orders Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -108,7 +108,7 @@ class DashboardScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 15),
-            
+
             // Order Items
             const OrderItemCard(
               orderNumber: "#3245",

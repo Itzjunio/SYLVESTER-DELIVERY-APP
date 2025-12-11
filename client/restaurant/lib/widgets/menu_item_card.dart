@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+// import 'package:cached_network_image/cached_network_image.dart';
 import 'package:restaurant_manager/constants/app_colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -54,7 +54,7 @@ class _MenuItemCardState extends State<MenuItemCard> {
               ),
             ),
             const SizedBox(width: 15),
-            
+
             // Menu Item Details
             Expanded(
               child: Column(
@@ -88,7 +88,7 @@ class _MenuItemCardState extends State<MenuItemCard> {
                 ],
               ),
             ),
-            
+
             // Actions
             Column(
               children: [
@@ -102,17 +102,17 @@ class _MenuItemCardState extends State<MenuItemCard> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                          _isAvailable 
-                              ? '${widget.name} is now available' 
+                          _isAvailable
+                              ? '${widget.name} is now available'
                               : '${widget.name} is now unavailable',
                         ),
                       ),
                     );
                   },
-                  activeColor: AppColors.primary,
+                  activeThumbColor: AppColors.primary,
                 ),
                 const SizedBox(height: 10),
-                
+
                 // Action Buttons
                 Row(
                   children: [

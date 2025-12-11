@@ -32,7 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = _userService.currentUser;
-    
+
     if (user == null) {
       return const Center(
         child: Text('Please login to view profile'),
@@ -58,7 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             style: const TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 30),
-          
+
           // Account Settings
           Card(
             child: Padding(
@@ -112,7 +112,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          
+
           // App Settings
           Card(
             child: Padding(
@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
           const SizedBox(height: 30),
-          
+
           // Logout button
           SizedBox(
             width: double.infinity,
@@ -349,7 +349,7 @@ class _EditVehicleInfoScreenState extends State<_EditVehicleInfoScreen> {
           child: Column(
             children: [
               DropdownButtonFormField<VehicleType>(
-                value: _vehicleType,
+                initialValue: _vehicleType,
                 items: VehicleType.values
                     .map((v) => DropdownMenuItem(value: v, child: Text(v.displayName)))
                     .toList(),

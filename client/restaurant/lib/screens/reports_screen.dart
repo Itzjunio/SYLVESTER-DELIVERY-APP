@@ -47,8 +47,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Summary Stats
-            Row(
-              children: const [
+            const Row(
+              children: [
                 Expanded(
                   child: StatsCard(
                     title: 'Total Sales',
@@ -67,7 +67,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
             const SizedBox(height: 30),
-            
+
             // Sales Overview Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -106,11 +106,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            
+
             // Sales Chart
             const SalesChart(),
             const SizedBox(height: 30),
-            
+
             // Top Selling Items
             const Text(
               'Top Selling Items',

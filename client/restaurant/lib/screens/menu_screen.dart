@@ -62,7 +62,7 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
               ],
             ),
           ),
-          
+
           // Menu Items List
           Expanded(
             child: TabBarView(
@@ -81,27 +81,27 @@ class _MenuScreenState extends State<MenuScreen> with SingleTickerProviderStateM
   }
 
   Widget _buildMenuItemsList({String? category}) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(15),
+    return const SingleChildScrollView(
+      padding: EdgeInsets.all(15),
       child: Column(
         children: [
-          const MenuItemCard(
+          MenuItemCard(
             name: 'Margherita Pizza',
             description: 'Classic pizza with tomato sauce and mozzarella',
             price: '\$12.99',
             imageUrl: 'https://images.unsplash.com/photo-1567602901358-5ba00815eb15?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
             isAvailable: true,
           ),
-          const SizedBox(height: 15),
-          const MenuItemCard(
+          SizedBox(height: 15),
+          MenuItemCard(
             name: 'Spaghetti Carbonara',
             description: 'Creamy pasta with eggs, cheese, and pancetta',
             price: '\$14.50',
             imageUrl: 'https://images.unsplash.com/photo-1621996346565-e3dbc353d2e5?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80',
             isAvailable: true,
           ),
-          const SizedBox(height: 15),
-          const MenuItemCard(
+          SizedBox(height: 15),
+          MenuItemCard(
             name: 'Classic Burger',
             description: 'Beef patty with lettuce, tomato, and special sauce',
             price: '\$10.99',

@@ -33,12 +33,12 @@ dependencies:
   cached_network_image: ^3.3.0
 
   # Animations
-  lottie: ^2.7.0
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
   # Web-specific dev dependencies
   build_web_compilers: ^4.0.4

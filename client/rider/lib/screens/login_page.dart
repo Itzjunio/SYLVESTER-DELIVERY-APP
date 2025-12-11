@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_service.dart';
 import '../models/user.dart';
 import '../widgets/vehicle_selector.dart';
-import '../widgets/success_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback onLogin;
@@ -24,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _userService = UserService();
-  
+
   VehicleType _selectedVehicle = VehicleType.bike;
   bool _isLoading = false;
 
@@ -66,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 40),
-              
+
               // Login form card
               Card(
                 child: Padding(
@@ -80,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Email/Phone field
                         TextFormField(
                           controller: _emailController,
@@ -91,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (value) => value!.isEmpty ? 'Required' : null,
                         ),
                         const SizedBox(height: 15),
-                        
+
                         // Password field
                         TextFormField(
                           controller: _passwordController,
@@ -103,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (value) => value!.isEmpty ? 'Required' : null,
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Vehicle selector
                         VehicleSelector(
                           selectedVehicle: _selectedVehicle,
@@ -112,7 +111,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Login button
                         SizedBox(
                           width: double.infinity,
@@ -131,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        
+
                         // Forgot password
                         TextButton(
                           onPressed: () {
@@ -143,7 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text('Forgot Password?'),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Social login buttons
                         SizedBox(
                           width: double.infinity,
@@ -191,7 +190,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Sign up link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../services/user_service.dart';
 import '../models/user.dart';
 import '../widgets/vehicle_selector.dart';
@@ -26,7 +25,7 @@ class _SignupPageState extends State<SignupPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _userService = UserService();
-  
+
   VehicleType _selectedVehicle = VehicleType.bike;
   bool _isLoading = false;
 
@@ -57,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
                 style: TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 40),
-              
+
               // Signup form card
               Card(
                 child: Padding(
@@ -76,7 +75,7 @@ class _SignupPageState extends State<SignupPage> {
                           validator: (value) => value!.isEmpty ? 'Required' : null,
                         ),
                         const SizedBox(height: 15),
-                        
+
                         // Email field
                         TextFormField(
                           controller: _emailController,
@@ -92,7 +91,7 @@ class _SignupPageState extends State<SignupPage> {
                           },
                         ),
                         const SizedBox(height: 15),
-                        
+
                         // Phone field
                         TextFormField(
                           controller: _phoneController,
@@ -104,7 +103,7 @@ class _SignupPageState extends State<SignupPage> {
                           validator: (value) => value!.isEmpty ? 'Required' : null,
                         ),
                         const SizedBox(height: 15),
-                        
+
                         // Password field
                         TextFormField(
                           controller: _passwordController,
@@ -120,7 +119,7 @@ class _SignupPageState extends State<SignupPage> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Vehicle selector
                         VehicleSelector(
                           selectedVehicle: _selectedVehicle,
@@ -129,7 +128,7 @@ class _SignupPageState extends State<SignupPage> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Signup button
                         SizedBox(
                           width: double.infinity,
@@ -148,7 +147,7 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        
+
                         // Login link
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,

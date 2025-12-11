@@ -28,13 +28,13 @@ class OrderDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Customer Information Card
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Customer Information',
                       style: TextStyle(
                         fontSize: 18,
@@ -42,16 +42,16 @@ class OrderDetailsScreen extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    const _InfoRow(
+                    SizedBox(height: 15),
+                    _InfoRow(
                       label: 'Name:',
                       value: 'Sarah Johnson',
                     ),
-                    const _InfoRow(
+                    _InfoRow(
                       label: 'Phone:',
                       value: '(555) 123-4567',
                     ),
-                    const _InfoRow(
+                    _InfoRow(
                       label: 'Delivery Address:',
                       value: '123 Main St, Apt 4B, New York, NY 10001',
                     ),
@@ -60,15 +60,15 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Order Items Card
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Order Items',
                       style: TextStyle(
                         fontSize: 18,
@@ -76,17 +76,17 @@ class OrderDetailsScreen extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    const _OrderItemRow(
+                    SizedBox(height: 15),
+                    _OrderItemRow(
                       item: '2x Margherita Pizza',
                       price: '\$25.98',
                     ),
-                    const _OrderItemRow(
+                    _OrderItemRow(
                       item: '1x Garlic Bread',
                       price: '\$6.52',
                     ),
-                    const Divider(),
-                    const _OrderItemRow(
+                    Divider(),
+                    _OrderItemRow(
                       item: 'Total',
                       price: '\$32.50',
                       isTotal: true,
@@ -96,15 +96,15 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Special Instructions Card
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Special Instructions',
                       style: TextStyle(
                         fontSize: 18,
@@ -112,8 +112,8 @@ class OrderDetailsScreen extends StatelessWidget {
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 15),
-                    const Text(
+                    SizedBox(height: 15),
+                    Text(
                       'Please add extra cheese to the pizza',
                       style: TextStyle(
                         fontSize: 14,
@@ -125,7 +125,7 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            
+
             // Order Status Card
             const Text(
               'Order Status',
@@ -136,28 +136,28 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-            Card(
+            const Card(
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    const _StatusStep(
+                    _StatusStep(
                       title: 'Order Placed',
                       time: '12:30 PM',
                       isCompleted: true,
                     ),
-                    const _StatusStep(
+                    _StatusStep(
                       title: 'Preparing',
                       time: '12:35 PM',
                       isCompleted: true,
                     ),
-                    const _StatusStep(
+                    _StatusStep(
                       title: 'Ready for Pickup',
                       time: 'Expected 1:00 PM',
                       isCompleted: false,
                       isCurrent: true,
                     ),
-                    const _StatusStep(
+                    _StatusStep(
                       title: 'Completed',
                       time: 'Pending',
                       isCompleted: false,
@@ -167,7 +167,7 @@ class OrderDetailsScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 30),
-            
+
             // Mark as Ready Button
             SizedBox(
               width: double.infinity,

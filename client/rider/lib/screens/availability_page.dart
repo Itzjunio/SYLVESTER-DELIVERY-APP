@@ -45,12 +45,12 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
     try {
       await _userService.updateOnlineStatus(isOnline);
       setState(() {});
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              isOnline 
+              isOnline
                 ? 'You are now online and will receive delivery requests'
                 : 'You are now offline and will not receive delivery requests',
             ),
@@ -89,7 +89,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
   @override
   Widget build(BuildContext context) {
     final user = _userService.currentUser;
-    
+
     if (user == null) {
       return const Center(
         child: Text('Please login to view availability'),
@@ -106,7 +106,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 30),
-          
+
           // Online/Offline toggle
           Center(
             child: Column(
@@ -114,7 +114,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                 Switch(
                   value: user.isOnline,
                   onChanged: _toggleOnlineStatus,
-                  activeColor: Colors.green,
+                  activeThumbColor: Colors.green,
                   inactiveThumbColor: Colors.red,
                   inactiveTrackColor: Colors.red.withOpacity(0.3),
                 ),
@@ -152,14 +152,14 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
             ),
           ),
           const SizedBox(height: 30),
-          
+
           // Today's stats
           const Text(
             "Today's Stats",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
-          
+
           if (_isLoading)
             const Center(
               child: Padding(
@@ -191,7 +191,7 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                
+
                 // Average time
                 Row(
                   children: [
@@ -206,9 +206,9 @@ class _AvailabilityPageState extends State<AvailabilityPage> {
                 ),
               ],
             ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Schedule card
           Card(
             child: Padding(

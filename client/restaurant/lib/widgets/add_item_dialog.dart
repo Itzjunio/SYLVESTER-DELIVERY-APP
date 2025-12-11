@@ -64,7 +64,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ],
               ),
               const SizedBox(height: 20),
-              
+
               // Form Fields
               CustomTextField(
                 controller: _nameController,
@@ -77,7 +77,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               ),
               const SizedBox(height: 15),
-              
+
               CustomTextField(
                 controller: _descriptionController,
                 labelText: 'Description',
@@ -90,7 +90,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               ),
               const SizedBox(height: 15),
-              
+
               CustomTextField(
                 controller: _priceController,
                 labelText: 'Price',
@@ -106,10 +106,10 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               ),
               const SizedBox(height: 15),
-              
+
               // Category Dropdown
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                 ),
@@ -126,7 +126,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 },
               ),
               const SizedBox(height: 15),
-              
+
               // Image Upload
               Container(
                 height: 100,
@@ -154,7 +154,7 @@ class _AddItemDialogState extends State<AddItemDialog> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Action Buttons
               Row(
                 children: [

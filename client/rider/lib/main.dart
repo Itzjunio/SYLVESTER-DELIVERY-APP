@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:url_launcher/url_launcher.dart';
-import 'dart:ui' show platformDispatcher;
 import 'dart:async';
-import 'screens/order_details_page.dart';
 import 'screens/notifications_page.dart';
 import 'screens/profile_screen.dart';
 import 'screens/login_page.dart';
@@ -14,7 +10,6 @@ import 'screens/map_page.dart';
 import 'screens/earnings_page.dart';
 import 'screens/availability_page.dart';
 import 'services/user_service.dart';
-import 'models/user.dart';
 
 void main() {
   // Initialize web-specific features

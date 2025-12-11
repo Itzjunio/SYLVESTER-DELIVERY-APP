@@ -32,17 +32,17 @@ class _SupportScreenState extends State<SupportScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(15),
+      body: const SingleChildScrollView(
+        padding: EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // FAQ Section
-            const FaqAccordion(),
-            const SizedBox(height: 20),
-            
+            FaqAccordion(),
+            SizedBox(height: 20),
+
             // Contact Support Section
-            const ContactSupportForm(),
+            ContactSupportForm(),
           ],
         ),
       ),

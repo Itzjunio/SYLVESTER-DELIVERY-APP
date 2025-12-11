@@ -30,7 +30,7 @@ class OrderItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border(
+        border: const Border(
           left: BorderSide(
             color: AppColors.primary,
             width: 4,
@@ -87,7 +87,7 @@ class OrderItemCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 10),
-          
+
           // Items
           Text(
             items,
@@ -97,7 +97,7 @@ class OrderItemCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 15),
-          
+
           // Footer with total and time/actions
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
