@@ -1,5 +1,5 @@
 {
-  "name": "sylvester-monorepo",
+  "name": "kwik",
   "private": true,
   "version": "1.0.0",
   "scripts": {
@@ -7,9 +7,18 @@
     "dev:admin": "cd admin && npm run dev",
     "start:backend": "cd backend && npm start",
     "build:backend": "cd backend && npm run build",
-    "dev:client": "cd client && flutter run -d chrome",
-    "build:client": "cd client && flutter build apk",
-    "analyze:client": "cd client && flutter analyze",
+
+
+    "dev:rider": "cd rider && flutter run -d chrome",
+    "build:rider": "cd rider && flutter build apk",
+    "analyze:rider": "cd rider && flutter analyze",
+
+
+    "dev:restaurant": "cd restaurant && flutter run -d chrome",
+    "build:restaurant": "cd restaurant && flutter build apk",
+    "analyze:restaurant": "cd restaurant && flutter analyze",
+
+
     "doctor": "flutter doctor"
   }
 }
